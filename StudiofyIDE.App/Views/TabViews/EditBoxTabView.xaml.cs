@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -17,26 +16,6 @@ namespace WindowsCode.Studio.Views.TabViews
         public EditBoxTabView()
         {
             InitializeComponent();
-        }
-
-        private void EditBox_TextChanged(object sender, RoutedEventArgs e)
-        {
-            //var parent = EditorPage._activePage;
-            //var tabItem = parent.FileTabView.ContainerFromItem(EditBox.DataContext) as TabViewItem;
-            //if (tabItem != null)
-            //{
-            //    tabItem.Header = $"* {tabItem.Header}";
-            //}
-        }
-
-        private void EditBox_TextChanging(RichEditBox sender, RichEditBoxTextChangingEventArgs args)
-        {
-            //var parent = EditorPage._activePage;
-            //var tabItem = parent.FileTabView.ContainerFromItem(EditBox.DataContext) as TabViewItem;
-            //if (tabItem != null)
-            //{
-            //    tabItem.Header = $"* {tabItem.Header}";
-            //}
         }
     }
 }

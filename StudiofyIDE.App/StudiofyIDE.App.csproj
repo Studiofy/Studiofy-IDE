@@ -2,14 +2,14 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
-    <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.22000.0</TargetPlatformMinVersion>
     <RootNamespace>WindowsCode.Studio</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
-	  <UseRidGraph>true</UseRidGraph>
+	<UseRidGraph>true</UseRidGraph>
     <EnableMsixTooling>true</EnableMsixTooling>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
@@ -52,10 +52,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
     <PackageReference Include="Octokit" Version="9.0.0" />
-    <PackageReference Include="System.Management.Automation" Version="7.3.3" />
+    <PackageReference Include="System.Management.Automation" Version="7.4.0" />
     <Manifest Include="$(ApplicationManifest)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="8.0.0" />
+    <PackageReference Include="WinUIEx" Version="2.3.3" />
   </ItemGroup>
   <!-- 
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
@@ -115,6 +116,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StudiofyIDE.Core\StudiofyIDE.Core.csproj" />
-    <ProjectReference Include="..\StudiofyIDE.Extension\StudiofyIDE.Extension.csproj" />
   </ItemGroup>
 </Project>

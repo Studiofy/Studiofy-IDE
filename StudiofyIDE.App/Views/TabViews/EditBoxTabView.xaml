@@ -14,13 +14,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <RichEditBox x:Name="EditBox" 
-                     Grid.Row="0"
-                     Margin="0,2,0,0"
-                     CornerRadius="0"
-                     BorderThickness="0"
-                     TextChanged="EditBox_TextChanged"
-                     TextChanging="EditBox_TextChanging">
-        </RichEditBox>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
     </Grid>
 </Page>

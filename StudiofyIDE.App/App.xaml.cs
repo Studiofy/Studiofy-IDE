@@ -3,7 +3,6 @@ using Microsoft.Windows.ApplicationModel.WindowsAppRuntime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -39,18 +38,18 @@ namespace WindowsCode.Studio
                 _ = DeploymentManager.Initialize();
             }
 
-            if (Debugger.IsAttached)
-            {
-                m_Window = new MainWindow();
-                m_Window.Show();
-            }
-            else
-            {
-                SplashScreen s_Window = new(typeof(MainWindow));
-                s_Window.CenterOnScreen();
-                _ = s_Window.Show();
-                s_Window.Completed += Window_Completed;
-            }
+            //if (Debugger.IsAttached)
+            //{
+            //    m_Window = new MainWindow();
+            //    m_Window.Show();
+            //}
+            //else
+            //{
+            SplashScreen s_Window = new(typeof(MainWindow));
+            s_Window.CenterOnScreen();
+            _ = s_Window.Show();
+            s_Window.Completed += Window_Completed;
+            //}
         }
 
         private void Window_Completed(object sender, Window e)
@@ -74,7 +73,7 @@ namespace WindowsCode.Studio
             {
                 if (File.Exists(filename))
                 {
-                    JsonObject JsonObj = JsonObject.Parse(File.ReadAllText(filename)) as JsonObject;
+                    JsonObject JsonObj = JsonNode.Parse(File.ReadAllText(filename)) as JsonObject;
                     foreach (KeyValuePair<string, JsonNode> node in JsonObj)
                     {
                         if (node.Value is JsonValue jvalue && jvalue.TryGetValue<string>(out string value))

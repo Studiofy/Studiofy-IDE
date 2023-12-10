@@ -36,7 +36,8 @@
                        Text="{x:Bind Title}" 
                        Style="{StaticResource CaptionTextBlockStyle}"
                        Grid.Column="2"
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center"
+                       Margin="0,0,50,0"/>
             <AutoSuggestBox x:Name="GlobalSearch" 
                             Grid.Column="4"
                             VerticalAlignment="Center"
@@ -356,7 +357,10 @@
                   BorderBrush="Gray"
                   BorderThickness="0,1,0,0"
                   Grid.Row="3">
-                
+                <TextBlock Text="Studiofy IDE (Canary)"
+                           FontSize="12"
+                           VerticalAlignment="Center"
+                           Margin="10,0"/>
             </Grid>
         </Grid>
     </Grid>

@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StudiofyIDE.App", "Studiofy
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StudiofyIDE.Core", "StudiofyIDE.Core\StudiofyIDE.Core.csproj", "{F9AF6383-1FB0-4E6B-8B65-AFFBD2D32FDE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StudiofyIDE.Extension", "StudiofyIDE.Extension\StudiofyIDE.Extension.csproj", "{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,18 +44,6 @@ Global
 		{F9AF6383-1FB0-4E6B-8B65-AFFBD2D32FDE}.Release|ARM64.Build.0 = Release|Any CPU
 		{F9AF6383-1FB0-4E6B-8B65-AFFBD2D32FDE}.Release|x64.ActiveCfg = Release|Any CPU
 		{F9AF6383-1FB0-4E6B-8B65-AFFBD2D32FDE}.Release|x64.Build.0 = Release|Any CPU
-		{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}.Debug|x64.Build.0 = Debug|Any CPU
-		{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}.Release|ARM64.Build.0 = Release|Any CPU
-		{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}.Release|x64.ActiveCfg = Release|Any CPU
-		{D7993593-8191-4DD2-84A5-8F8CCBC1A55B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
