@@ -1,9 +1,9 @@
 {
   "profiles": {
-    "WindowsCode.Studio (Package)": {
+    "StudiofyIDE.App (Package)": {
       "commandName": "MsixPackage"
     },
-    "WindowsCode.Studio (Unpackaged)": {
+    "StudiofyIDE.App (Unpackaged)": {
       "commandName": "Project"
     }
   }

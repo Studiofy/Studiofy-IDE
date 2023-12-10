@@ -1,14 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
     <RootNamespace>WindowsCode.Studio</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x64;ARM64</Platforms>
-    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
-    <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
+	  <UseRidGraph>true</UseRidGraph>
     <EnableMsixTooling>true</EnableMsixTooling>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
@@ -19,13 +20,13 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundle>Never</AppxBundle>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <PackageCertificateKeyFile>WindowsCode.Studio_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <AssemblyName>CodeStudio</AssemblyName>
-    <FileVersion>0.1.2015.0</FileVersion>
-    <Version>0.1.2015</Version>
-    <Copyright>Copyright © 2023 Terence Carrera. All Rights Reserved.</Copyright>
+    <PackageCertificateKeyFile>StudiofyIDE.App_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <AssemblyName>StudiofyIDE</AssemblyName>
+    <Version>1.0.0</Version>
+    <Copyright>Copyright © 2023 Studiofy. All Rights Reserved.</Copyright>
     <NeutralLanguage>en-PH</NeutralLanguage>
     <ApplicationIcon>Assets\CodeStudioCanary.ico</ApplicationIcon>
+    <SupportedOSPlatformVersion>10.0.22000.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="CustomControl\**" />
@@ -40,7 +41,6 @@
     <None Remove="Views\TabViews\EditBoxTabView.xaml" />
     <None Remove="Views\WelcomePage.xaml" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
@@ -49,18 +49,14 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230313.1" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
-    <PackageReference Include="Octokit" Version="5.0.3" />
-    <PackageReference Include="System.DirectoryServices.AccountManagement" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
+    <PackageReference Include="Octokit" Version="9.0.0" />
     <PackageReference Include="System.Management.Automation" Version="7.3.3" />
-    <PackageReference Include="WinUIEx" Version="2.1.0" />
     <Manifest Include="$(ApplicationManifest)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <PackageReference Include="System.DirectoryServices.AccountManagement" Version="8.0.0" />
   </ItemGroup>
-
   <!-- 
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
@@ -94,11 +90,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WindowsCode.Core\WindowsCode.Core.csproj" />
-    <ProjectReference Include="..\WindowsCode.Extension\WindowsCode.Extension.csproj" />
-  </ItemGroup>
-
   <!-- 
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution 
     Explorer "Package and Publish" context menu entry to be enabled for this project even if 
@@ -121,5 +112,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PRIResource Remove="CustomControl\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StudiofyIDE.Core\StudiofyIDE.Core.csproj" />
+    <ProjectReference Include="..\StudiofyIDE.Extension\StudiofyIDE.Extension.csproj" />
   </ItemGroup>
 </Project>

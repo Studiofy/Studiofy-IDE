@@ -8,13 +8,13 @@
   IgnorableNamespaces="uap rescap uap3">
 
   <Identity
-    Name="WindowsCodeStudio-740e4091bf89-563ace993d44"
-    Publisher="CN=Terence Carrera"
-    Version="0.1.2015.0" />
+    Name="Studiofy-IDE-740e40-91bf89-563ace993d44"
+    Publisher="CN=Studiofy"
+    Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>Windows Code Studio (Canary)</DisplayName>
-    <PublisherDisplayName>Terence Carrera</PublisherDisplayName>
+    <DisplayName>Studiofy IDE (Canary)</DisplayName>
+    <PublisherDisplayName>Studiofy</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -32,8 +32,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="Windows Code Studio (Canary)"
-        Description="Code Editor with Modern UX"
+        DisplayName="Studiofy IDE (Canary)"
+        Description="A simple Integrated Development Environment for Windows 11"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">

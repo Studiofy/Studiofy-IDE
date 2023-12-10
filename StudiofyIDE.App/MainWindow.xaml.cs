@@ -231,36 +231,21 @@ namespace WindowsCode.Studio
 
         private async Task GetUpdates()
         {
-            GitHubClient GitClient = new(new ProductHeaderValue("WCS"));
-            string Revision = Windows.ApplicationModel.Package.Current.Id.Version.Revision.ToString();
+            GitHubClient GitClient = new(new ProductHeaderValue("Studiofy-IDE"));
             string Current = Windows.ApplicationModel.Package.Current.Id.Version.Major.ToString() + "."
                         + Windows.ApplicationModel.Package.Current.Id.Version.Minor.ToString() + "."
                         + Windows.ApplicationModel.Package.Current.Id.Version.Build.ToString() + "."
-                        + Revision + "-canary";
+                        + Windows.ApplicationModel.Package.Current.Id.Version.Revision.ToString() + "-Canary";
             try
             {
-                IReadOnlyList<Release> Release = await GitClient.Repository.Release.GetAll("rencerace", "WCS");
+                IReadOnlyList<Release> Release = await GitClient.Repository.Release.GetAll("Studiofy", "Studiofy-IDE");
                 Release Latest = Release[0];
-                if (Latest.TagName.EndsWith("-canary") && Latest.TagName != Current)
+                if (!Latest.TagName.EndsWith("v" + Current))
                 {
-                    //if (Current != Latest.TagName)
-                    //{
-                    //    ContentDialog userDialog = new()
-                    //    {
-                    //        Title = "Wait, What?",
-                    //        Content = "You have the INTERNAL version of the application.\n" +
-                    //                  "IF YOU KNOW WHAT YOU ARE DOING, PLEASE IGNORE THIS MESSAGE.",
-                    //        CloseButtonText = "OK",
-                    //        DefaultButton = ContentDialogButton.Close
-                    //    };
-                    //    userDialog.XamlRoot = Content.XamlRoot;
-                    //    await userDialog.ShowAsync();
-                    //}
-                    //else 
-                    //{ 
+                    Debug.WriteLine(Latest.TagName.EndsWith("v" + Current) ? Latest.TagName.Replace("-Canary", "") : "v" + Current);
                     ContentDialog updateDialog = new()
                     {
-                        Title = "Windows Code Studio Canary Update is Available!",
+                        Title = "Studiofy IDE (Canary) Update is Available!",
                         Content = "Would you like to Update now?",
                         PrimaryButtonText = "Yes, Update Now",
                         SecondaryButtonText = "No, Maybe Later",
@@ -290,7 +275,7 @@ namespace WindowsCode.Studio
                                     HttpResponseMessage response = httpClient.GetAsync(url).Result;
                                     Stream content = response.Content.ReadAsStreamAsync().Result;
                                     string TempPath = Path.GetTempPath();
-                                    string fileName = "WCSCertificate.cer";
+                                    string fileName = "SIDECertificate.cer";
                                     string filePath = Path.Combine(TempPath, fileName);
 
                                     using (FileStream fileStream = new(filePath, System.IO.FileMode.CreateNew))
@@ -327,7 +312,7 @@ namespace WindowsCode.Studio
                             HttpResponseMessage response = httpClient.GetAsync(url).Result;
                             Stream content = response.Content.ReadAsStreamAsync().Result;
                             string TempPath = Path.GetTempPath();
-                            string fileName = "WCSUpdate.msix";
+                            string fileName = "SIDECanaryUpdate.msix";
                             string filePath = Path.Combine(TempPath, fileName);
 
                             bool IsFileAlreadyAvailable = File.Exists(filePath);
@@ -360,14 +345,13 @@ namespace WindowsCode.Studio
                             }
                         }
                     }
-                    //}
                 }
                 else
                 {
                     ContentDialog confirmDialog = new()
                     {
-                        Title = "Windows Code Studio Canary is Up-to-Date",
-                        Content = "You are using the latest version of Windows Code Studio Canary",
+                        Title = "Studiofy IDE (Canary) is Up-to-Date",
+                        Content = "You are using the latest version of Studiofy IDE (Canary)",
                         CloseButtonText = "OK",
                         DefaultButton = ContentDialogButton.Close,
                         XamlRoot = Content.XamlRoot
@@ -377,15 +361,19 @@ namespace WindowsCode.Studio
             }
             catch (Exception ex)
             {
-                ContentDialog exceptionDialog = new()
+                if (ex.GetType().Name.ToString() == "NotFoundException")
                 {
-                    Title = "Error Encountered",
-                    Content = "Source: " + ex.Source + "\nMessage: " + ex.Message,
-                    CloseButtonText = "OK",
-                    DefaultButton = ContentDialogButton.Close,
-                    XamlRoot = Content.XamlRoot
-                };
-                _ = await exceptionDialog.ShowAsync();
+                    ContentDialog exceptionDialog = new()
+                    {
+                        Title = "Error",
+                        Content = "Cannot find new updates for Studiofy IDE Canary Channel",
+                        SecondaryButtonText = "Help",
+                        CloseButtonText = "OK",
+                        DefaultButton = ContentDialogButton.Close,
+                        XamlRoot = Content.XamlRoot
+                    };
+                    _ = await exceptionDialog.ShowAsync();
+                }
             }
         }
 

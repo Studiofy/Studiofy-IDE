@@ -34,13 +34,13 @@ namespace WindowsCode.Core.Services
             switch (version)
             {
                 case Version.Canary:
-                    VERSION_IDENTIFIER = VERSION_SEPARATOR + "canary";
+                    VERSION_IDENTIFIER = VERSION_SEPARATOR + "Canary";
                     break;
                 case Version.Beta:
-                    VERSION_IDENTIFIER = VERSION_SEPARATOR + "beta";
+                    VERSION_IDENTIFIER = VERSION_SEPARATOR + "Beta";
                     break;
                 case Version.Official:
-                    VERSION_IDENTIFIER = VERSION_SEPARATOR + "official";
+                    VERSION_IDENTIFIER = VERSION_SEPARATOR + "Official";
                     break;
             }
         }
@@ -54,28 +54,23 @@ namespace WindowsCode.Core.Services
 
         public async Task CheckUpdates()
         {
-            GitHubClient GitClient = new(new Octokit.ProductHeaderValue("WCS"));
+            GitHubClient GitClient = new(new ProductHeaderValue("Studiofy-IDE"));
             try
             {
-                IReadOnlyList<Release> Releases = await GitClient.Repository.Release.GetAll("rencerace", "WCS");
+                IReadOnlyList<Release> Releases = await GitClient.Repository.Release.GetAll("Studiofy", "Studiofy-IDE");
                 foreach (Release Release in Releases)
                 {
-                    string TagName = Release.TagName.Replace("-canary", "");
+                    string TagName = Release.TagName.Replace("-Canary", "");
                     string[] versionParts = TagName.Split('.');
                     LATEST_VERSION_MAJOR = int.Parse(versionParts[0]);
                     LATEST_VERSION_MINOR = int.Parse(versionParts[1]);
                     LATEST_VERSION_BUILD = int.Parse(versionParts[2]);
                     LATEST_VERSION_REVISION = int.Parse(versionParts[3]);
-                    if (Release.TagName.EndsWith("-canary"))
-                    {
-
-                    }
-
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine(ex.Message);
             }
         }
     }

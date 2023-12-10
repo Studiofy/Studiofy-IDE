@@ -21,10 +21,10 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0"
                   Margin="0,0,0,25">
-                <TextBlock Text="Windows Code Studio"
+                <TextBlock Text="Studiofy IDE"
                        Margin="15" FontSize="24"
                        FontWeight="Bold"/>
-                <TextBlock Text="Modernize Code Editing with Windows Code Studio"
+                <TextBlock Text="Modernize Code Editing with Studiofy IDE"
                        Margin="15,60,15,0"/>
             </Grid>
             <Grid Grid.Row="1">
@@ -107,16 +107,16 @@
                             BorderThickness="0.5"
                             CornerRadius="4"
                             Margin="15,0,15,15">
-                    <TextBlock Text="Learn More about Windows Code Studio"
+                    <TextBlock Text="Learn More about Studiofy IDE"
                                TextWrapping="WrapWholeWords"
                                FontSize="18"
                                FontWeight="SemiBold"
                                Margin="15"/>
-                    <HyperlinkButton Content="Getting Started with Windows Code Studio"
+                    <HyperlinkButton Content="Getting Started with Studiofy IDE"
                                      HorizontalContentAlignment="Left"
                                      HorizontalAlignment="Stretch"
                                      Height="50" Margin="15,0,15,15"/>
-                    <HyperlinkButton Content="Explaining WCS Build Channels (Canary, Beta, Official)"
+                    <HyperlinkButton Content="Explaining Studiofy IDE Build Channels (Canary, Beta, Official)"
                                      HorizontalContentAlignment="Left"
                                      HorizontalAlignment="Stretch"
                                      Height="50" Margin="15,0,15,15"/>
@@ -124,7 +124,7 @@
                                      HorizontalContentAlignment="Left"
                                      HorizontalAlignment="Stretch"
                                      Height="50" Margin="15,0,15,15"/>
-                    <HyperlinkButton Content="Windows Code Studio's GitHub Repository"
+                    <HyperlinkButton Content="Studiofy IDE's GitHub Repository"
                                      HorizontalContentAlignment="Left"
                                      HorizontalAlignment="Stretch"
                                      Height="50" Margin="15,0,15,15"/>

@@ -315,7 +315,6 @@
                                  AccessKey="H">
                         <MenuBarItem.Items>
                             <MenuFlyoutItem Text="Getting Started"/>
-                            <MenuFlyoutItem Text="Explore WCS Repository"/>
                             <MenuFlyoutItem Text="What's New?"/>
                             <MenuFlyoutSeparator/>
                             <MenuFlyoutItem x:Name="UpdateItem"
@@ -331,7 +330,7 @@
                             </MenuFlyoutItem>
                             <MenuFlyoutSeparator/>
                             <MenuFlyoutItem x:Name="AboutItem"
-                                            Text="About WCS"
+                                            Text="About Studiofy IDE"
                                             Click="AboutItem_Click">
                                 <MenuFlyoutItem.Icon>
                                     <FontIcon Glyph="&#xE946;"/>
