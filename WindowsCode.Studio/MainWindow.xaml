@@ -1,0 +1,365 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<WinUI_X:WindowEx
+    x:Class="WindowsCode.Studio.MainWindow"
+    xmlns:WinUI_X="using:WinUIEx"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WindowsCode.Studio"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" MinWidth="1300" MinHeight="500">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid x:Name="AppTitleBar"
+              Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
+                <ColumnDefinition x:Name="IconColumn" Width="Auto"/>
+                <ColumnDefinition x:Name="TitleColumn" Width="Auto"/>
+                <ColumnDefinition x:Name="LeftDragColumn" Width="*"/>
+                <ColumnDefinition x:Name="SearchColumn" Width="350"/>
+                <ColumnDefinition x:Name="RightDragColumn" Width="*"/>
+                <ColumnDefinition x:Name="AccountColumn" Width="65"/>
+                <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
+            </Grid.ColumnDefinitions>
+            <Image x:Name="TitleBarIcon" Source="/Assets/CodeStudioCanary.ico"
+                   Grid.Column="1"
+                   Width="16" Height="16"
+                   Margin="18,0,14,0"/>
+            <TextBlock x:Name="TitleTextBlock" 
+                       Text="{x:Bind Title}" 
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       Grid.Column="2"
+                       VerticalAlignment="Center"/>
+            <AutoSuggestBox x:Name="GlobalSearch" 
+                            Grid.Column="4"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            PlaceholderText="Search"
+                            QueryIcon="Find" Width="350"
+                            ToolTipService.ToolTip="Press Ctrl + Shift + S to Search">
+                <AutoSuggestBox.KeyboardAccelerators>
+                    <KeyboardAccelerator Modifiers="Control,Shift"
+                                         Key="S"/>
+                </AutoSuggestBox.KeyboardAccelerators>
+            </AutoSuggestBox>
+            <Button x:Name="AccountButton"
+                    Height="38"
+                    Width="38"
+                    Padding="0"
+                    Grid.Column="6"
+                    CornerRadius="25"
+                    BorderThickness="0"
+                    Background="Transparent">
+                <Button.Content>
+                    <PersonPicture x:Name="AccountPicture" 
+                                   Margin="0,0,0,0"
+                                   Height="38"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"/>
+                </Button.Content>
+                <Button.Flyout>
+                    <Flyout Placement="Bottom">
+                        <Grid Width="200"
+                              Height="125">
+                            <TextBlock x:Name="AccountName"
+                                       FontWeight="SemiBold"
+                                       FontSize="18"
+                                       TextAlignment="Center"/>
+                            <TextBlock x:Name="AccountEmail"
+                                       TextAlignment="Center"
+                                       Margin="0,25,0,0"/>
+                            <Button x:Name="ShowAccountSettingsButton" 
+                                    Content="Account Settings"
+                                    VerticalAlignment="Bottom"
+                                    HorizontalAlignment="Stretch"
+                                    IsEnabled="False" Margin="0,0,0,37"
+                                    Style="{ThemeResource AccentButtonStyle}"/>
+                            <Button x:Name="SignOutAccountButton"
+                                    Content="Sign Out"
+                                    VerticalAlignment="Bottom"
+                                    HorizontalAlignment="Stretch"
+                                    IsEnabled="False" Margin="0,0,0,0"
+                                    Style="{ThemeResource AccentButtonStyle}"/>
+                        </Grid>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="32"/>
+            </Grid.RowDefinitions>
+            <MenuBar>
+                <MenuBar.Items>
+                    <MenuBarItem x:Name="FileMenu"
+                                 Title="File"
+                                 AccessKey="F">
+                        <MenuBarItem.Items>
+                            <MenuFlyoutSubItem x:Name="NewItem"
+                                               Text="New">
+                                <MenuFlyoutSubItem.Icon>
+                                    <SymbolIcon Symbol="Add"/>
+                                </MenuFlyoutSubItem.Icon>
+                                <MenuFlyoutSubItem.Items>
+                                    <MenuFlyoutItem x:Name="NewFile"
+                                                Text="File...">
+                                        <MenuFlyoutItem.Icon>
+                                            <SymbolIcon Symbol="Document"/>
+                                        </MenuFlyoutItem.Icon>
+                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                            <KeyboardAccelerator Modifiers="Control"
+                                                                 Key="N"/>
+                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem x:Name="NewFolder"
+                                                Text="Folder">
+                                        <MenuFlyoutItem.Icon>
+                                            <SymbolIcon Symbol="NewFolder"/>
+                                        </MenuFlyoutItem.Icon>
+                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                            <KeyboardAccelerator Modifiers="Control,Shift"
+                                                                 Key="N"/>
+                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                    </MenuFlyoutItem>
+                                </MenuFlyoutSubItem.Items>
+                            </MenuFlyoutSubItem>
+                            <MenuFlyoutSubItem x:Name="OpenItem"
+                                               Text="Open">
+                                <MenuFlyoutSubItem.Icon>
+                                    <FontIcon Glyph="&#xE7AC;"/>
+                                </MenuFlyoutSubItem.Icon>
+                                <MenuFlyoutSubItem.Items>
+                                    <MenuFlyoutItem x:Name="OpenFile"
+                                                    Text="File...">
+                                        <MenuFlyoutItem.Icon>
+                                            <SymbolIcon Symbol="OpenFile"/>
+                                        </MenuFlyoutItem.Icon>
+                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                            <KeyboardAccelerator Modifiers="Control"
+                                                                 Key="O"/>
+                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem x:Name="OpenFolder"
+                                                Text="Folder">
+                                        <MenuFlyoutItem.Icon>
+                                            <SymbolIcon Symbol="OpenLocal"/>
+                                        </MenuFlyoutItem.Icon>
+                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                            <KeyboardAccelerator Modifiers="Control,Shift"
+                                                                 Key="O"/>
+                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                    </MenuFlyoutItem>
+                                </MenuFlyoutSubItem.Items>
+                            </MenuFlyoutSubItem>
+                            <MenuFlyoutItem Text="Show Welcome Page">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE80F;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Text="Save">
+                                <MenuFlyoutItem.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Control"
+                                                     Key="S"/>
+                                </MenuFlyoutItem.KeyboardAccelerators>
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="Save"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Save All">
+                                <MenuFlyoutItem.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Control,Shift"
+                                                     Key="S"/>
+                                </MenuFlyoutItem.KeyboardAccelerators>
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xEA35;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Text="Close">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE8BB;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Close All"/>
+                            <MenuFlyoutItem Text="Properties">
+                                <MenuFlyoutItem.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Menu"
+                                                     Key="Enter"/>
+                                </MenuFlyoutItem.KeyboardAccelerators>
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE946;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Text="Exit">
+                                <MenuFlyoutItem.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Menu"
+                                                     Key="F4"/>
+                                </MenuFlyoutItem.KeyboardAccelerators>
+                            </MenuFlyoutItem>
+                        </MenuBarItem.Items>
+                    </MenuBarItem>
+                    <MenuBarItem Title="Edit">
+                        <MenuBarItem.Items>
+                            <MenuFlyoutItem Text="Cut">
+                                <MenuFlyoutItem.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Control"
+                                                     Key="X"/>
+                                </MenuFlyoutItem.KeyboardAccelerators>
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE8C6;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Copy">
+                                <MenuFlyoutItem.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Control"
+                                                     Key="C"/>
+                                </MenuFlyoutItem.KeyboardAccelerators>
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE8C8;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Paste">
+                                <MenuFlyoutItem.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Control"
+                                                     Key="V"/>
+                                </MenuFlyoutItem.KeyboardAccelerators>
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE77F;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Select All">
+                                <MenuFlyoutItem.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Control"
+                                                     Key="A"/>
+                                </MenuFlyoutItem.KeyboardAccelerators>
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE8B3;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Text="Find">
+                                <MenuFlyoutItem.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Control"
+                                                     Key="F"/>
+                                </MenuFlyoutItem.KeyboardAccelerators>
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE721;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Find &amp; Replace">
+                                <MenuFlyoutItem.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Control"
+                                                     Key="H"/>
+                                </MenuFlyoutItem.KeyboardAccelerators>
+                            </MenuFlyoutItem>
+                        </MenuBarItem.Items>
+                    </MenuBarItem>
+                    <MenuBarItem Title="View">
+                        <MenuBarItem.Items>
+                            <MenuFlyoutSubItem Text="File Navigation Pane Type">
+                                <MenuFlyoutSubItem.Items>
+                                    <RadioMenuFlyoutItem Text="Inline"/>
+                                    <RadioMenuFlyoutItem Text="Compact"/>
+                                </MenuFlyoutSubItem.Items>
+                            </MenuFlyoutSubItem>
+                            <ToggleMenuFlyoutItem Text="Line &amp; Column Info"/>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Text="File Properties Pane"/>
+                        </MenuBarItem.Items>
+                    </MenuBarItem>
+                    <MenuBarItem Title="Tools">
+                        <MenuBarItem.Items>
+                            <MenuFlyoutItem Text="Choose Command Bar Items"/>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutSubItem Text="Theme">
+                                <MenuFlyoutSubItem.Items>
+                                    <RadioMenuFlyoutItem Text="Light Theme"
+                                                         Width="200"/>
+                                    <RadioMenuFlyoutItem Text="Dark Theme"/>
+                                    <RadioMenuFlyoutItem Text="Windows Default"/>
+                                </MenuFlyoutSubItem.Items>
+                            </MenuFlyoutSubItem>
+                            <MenuFlyoutItem Text="Configure Terminal">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE756;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Text="Import &amp; Export Settings"/>
+                            <MenuFlyoutItem x:Name="AppOptionButton" 
+                                        Text="Options">
+                                <MenuFlyoutItem.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Control,Menu"
+                                                     Key="O"/>
+                                </MenuFlyoutItem.KeyboardAccelerators>
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="Setting"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuBarItem.Items>
+                    </MenuBarItem>
+                    <MenuBarItem x:Name="HelpMenu"
+                                 Title="Help"
+                                 AccessKey="H">
+                        <MenuBarItem.Items>
+                            <MenuFlyoutItem Text="Getting Started"/>
+                            <MenuFlyoutItem Text="Explore WCS Repository"/>
+                            <MenuFlyoutItem Text="What's New?"/>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem x:Name="UpdateItem"
+                                            Text="Check for Updates"
+                                            Click="UpdateItem_Click">
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="Sync"/>
+                                </MenuFlyoutItem.Icon>
+                                <MenuFlyoutItem.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Control,Menu"
+                                                         Key="U"/>
+                                </MenuFlyoutItem.KeyboardAccelerators>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem x:Name="AboutItem"
+                                            Text="About WCS"
+                                            Click="AboutItem_Click">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE946;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuBarItem.Items>
+                    </MenuBarItem>
+                </MenuBar.Items>
+            </MenuBar>
+            <InfoBar x:Name="AppInfoReporter"
+                     Grid.Row="1"
+                     IsOpen="True"
+                     IsClosable="True"
+                     Title="Canary Build"
+                     Severity="Warning"
+                     Message="This build may contain incomplete features and bugs"
+                     CornerRadius="0"
+                     BorderThickness="0"/>
+            <Frame x:Name="ContentProvider"
+                   Grid.Row="2"
+                   x:FieldModifier="Public"/>
+            <Grid x:Name="BottomToolBar"
+                  BorderBrush="Gray"
+                  BorderThickness="0,1,0,0"
+                  Grid.Row="3">
+                
+            </Grid>
+        </Grid>
+    </Grid>
+    
+</WinUI_X:WindowEx>
