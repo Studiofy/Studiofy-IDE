@@ -3,7 +3,6 @@ using Microsoft.UI.Xaml.Controls;
 using Octokit;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
@@ -14,44 +13,6 @@ namespace WindowsCode.Core.Services
 {
     public class UpdateService
     {
-        private int CURRENT_VERSION_MAJOR = 0, CURRENT_VERSION_MINOR = 0, CURRENT_VERSION_BUILD = 0, CURRENT_VERSION_REVISION = 0;
-        private int LATEST_VERSION_MAJOR = 0, LATEST_VERSION_MINOR = 0, LATEST_VERSION_BUILD = 0, LATEST_VERSION_REVISION = 0;
-        private char VERSION_SEPARATOR = '-';
-        private string VERSION_IDENTIFIER = "";
-
-        public UpdateService()
-        {
-
-            if (CURRENT_VERSION_MAJOR == 0 && CURRENT_VERSION_MINOR >= 1 && CURRENT_VERSION_MINOR <= 9)
-            {
-                new UpdateService(Version.Canary);
-            }
-            else if (CURRENT_VERSION_MAJOR == 0 && CURRENT_VERSION_MINOR >= 10 && CURRENT_VERSION_MINOR <= 19)
-            {
-                new UpdateService(Version.Beta);
-            }
-            else if (CURRENT_VERSION_MAJOR == 1 && CURRENT_VERSION_MINOR >= 0 && CURRENT_VERSION_BUILD <= 19 && CURRENT_VERSION_REVISION >= 0)
-            {
-                new UpdateService(Version.Official);
-            }
-        }
-
-        public UpdateService(Version version)
-        {
-            switch (version)
-            {
-                case Version.Canary:
-                    VERSION_IDENTIFIER = VERSION_SEPARATOR + "Canary";
-                    break;
-                case Version.Beta:
-                    VERSION_IDENTIFIER = VERSION_SEPARATOR + "Beta";
-                    break;
-                case Version.Official:
-                    VERSION_IDENTIFIER = VERSION_SEPARATOR + "Official";
-                    break;
-            }
-        }
-
         public enum Version
         {
             Canary,
@@ -72,17 +33,18 @@ namespace WindowsCode.Core.Services
                 Release Latest = Release[0];
                 if (!Latest.TagName.EndsWith("v" + Current))
                 {
-                    Debug.WriteLine(Latest.TagName.EndsWith("v" + Current) ? Latest.TagName.Replace("-Canary", "") : "v" + Current);
                     ContentDialog updateDialog = new()
                     {
-                        Title = "Studiofy IDE (Canary) Update is Available!",
-                        Content = "Would you like to Update now?",
+                        Title = "Update Available!",
+                        Content = $"{Latest.Name.Replace("-Canary", " for Canary Channel")} is Available.\nWould you like to Update now?",
                         PrimaryButtonText = "Yes, Update Now",
                         SecondaryButtonText = "No, Maybe Later",
                         DefaultButton = ContentDialogButton.Primary,
                         XamlRoot = content.XamlRoot
                     };
+
                     ContentDialogResult dialogResult = await updateDialog.ShowAsync();
+
                     if (dialogResult == ContentDialogResult.Primary)
                     {
                         IReadOnlyList<ReleaseAsset> Assets = Latest.Assets;
@@ -159,14 +121,15 @@ namespace WindowsCode.Core.Services
 
                             ContentDialog userDialog = new()
                             {
-                                Title = "App Force Shutdown",
-                                Content = "NOTE: This application is configured to forcibly shutdown itself when installing a newer version.\nWould you like to proceed?",
-                                PrimaryButtonText = "Yes, Install Now",
-                                CloseButtonText = "Cancel",
+                                Title = "Warning",
+                                Content = "This application is required to shutdown when installing an update.\nWould you like to proceed?",
+                                PrimaryButtonText = "OK",
                                 DefaultButton = ContentDialogButton.Primary,
                                 XamlRoot = content.XamlRoot
                             };
+
                             ContentDialogResult userDialogResult = await userDialog.ShowAsync();
+
                             if (userDialogResult == ContentDialogResult.Primary)
                             {
                                 PackageManager packman = new();
@@ -181,7 +144,7 @@ namespace WindowsCode.Core.Services
                     ContentDialog confirmDialog = new()
                     {
                         Title = "Studiofy IDE (Canary) is Up-to-Date",
-                        Content = "You are using the latest version of Studiofy IDE (Canary)",
+                        Content = $"{Latest.Name.Replace("v", "version ").Replace("-Canary", " for Canary Channel")} is the Latest Version",
                         CloseButtonText = "OK",
                         DefaultButton = ContentDialogButton.Close,
                         XamlRoot = content.XamlRoot
