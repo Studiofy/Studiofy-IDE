@@ -1,7 +1,4 @@
-using Microsoft.UI.Xaml;
 using System;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using WinUIEx;
@@ -32,8 +29,8 @@ namespace WindowsCode.Studio
             this.SetIsShownInSwitchers(false);
             CheckWindowsVersion();
             VersionText.Text = "version " + Package.Current.Id.Version.Major + "."
-                                                  + Package.Current.Id.Version.Minor + "."
-                                                  + Package.Current.Id.Version.Build;
+                                          + Package.Current.Id.Version.Minor + "."
+                                          + Package.Current.Id.Version.Build;
         }
 
         private void CheckWindowsVersion()
@@ -54,56 +51,17 @@ namespace WindowsCode.Studio
             for (int i = 0; i <= 10; i++)
             {
                 LoadingBar.IsIndeterminate = true;
-
-                if (Application.Current.Resources?.Source != null)
-                {
-                    AssemblyName assemblyName = new(Application.Current.Resources.Source.AbsolutePath);
-                    Assembly assembly = Assembly.Load(assemblyName);
-
-                    // Get all loaded assemblies
-                    Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-                    foreach (Assembly loadedAssembly in loadedAssemblies)
-                    {
-                        // Display the name of each loaded assembly
-                        ProgressText.Text = $"Loaded Assembly: {loadedAssembly.FullName}";
-
-                        // You can also iterate over types in each assembly if needed
-                        System.Collections.Generic.IEnumerable<Type> types = loadedAssembly.GetTypes()
-                            .Where(t => typeof(UIElement).IsAssignableFrom(t));
-
-                        foreach (Type type in types)
-                        {
-                            ProgressText.Text += $"\nLoaded Component: {type.Name}";
-                        }
-
-                        await Task.Delay(250); // Add a delay if needed
-                    }
-                }
-                else
-                {
-                    ProgressText.Text = "Loading Core Libraries";
-
-                    for (int j = 0; j < i % 4; j++)
-                    {
-                        ProgressText.Text += ".";
-                    }
-                }
-                // Display a random tip or quote
                 DisplayRandomTip();
-
-                await Task.Delay(2500);
+                await Task.Delay(5000);
             }
-
             return;
         }
 
         private void DisplayRandomTip()
         {
-            // Display a random tip or quote in ProgressText
             Random random = new();
             int randomIndex = random.Next(0, splashScreenTips.Length);
-            TipText.Text = $"\nTip: {splashScreenTips[randomIndex]}";
+            TipText.Text = $"\n{splashScreenTips[randomIndex]}";
         }
     }
 }

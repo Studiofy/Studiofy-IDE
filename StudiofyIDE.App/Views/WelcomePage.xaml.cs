@@ -4,7 +4,8 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
-using WinUIEx;
+using System;
+using WindowsCode.Studio.Views.Dialogs;
 
 namespace WindowsCode.Studio.Views
 {
@@ -29,8 +30,30 @@ namespace WindowsCode.Studio.Views
 
         private async void NewFileButton_Click(object sender, RoutedEventArgs e)
         {
-            WindowEx dialog = new();
-            await dialog.ShowMessageDialogAsync("Welcome", "New File");
+            New_File newFileDialog = new()
+            {
+                XamlRoot = Content.XamlRoot
+            };
+
+            ContentDialogResult dialogResult = await newFileDialog.ShowAsync();
+
+            if (dialogResult == ContentDialogResult.Primary && !string.IsNullOrEmpty(newFileDialog._fileName))
+            {
+
+            }
+            else
+            {
+                ContentDialog errorDialog = new()
+                {
+                    Title = "Error",
+                    Content = "Invalid File Name",
+                    CloseButtonText = "OK",
+                    DefaultButton = ContentDialogButton.Close
+                };
+                errorDialog.XamlRoot = Content.XamlRoot;
+                await errorDialog.ShowAsync();
+            }
+
         }
     }
 }

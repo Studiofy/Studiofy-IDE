@@ -17,15 +17,16 @@
         </Grid.RowDefinitions>
         <CommandBar x:Name="AppCommandBar"
                     Grid.Row="0"
-                    DefaultLabelPosition="Right"
-                    HorizontalAlignment="Stretch"
+                    DefaultLabelPosition="Collapsed"
+                    HorizontalAlignment="Left"
                     IsDynamicOverflowEnabled="False"
                     OverflowButtonVisibility="Collapsed">
             <AppBarButton x:Name="NewFileButton"
                           Label="New"
                           AccessKey="N"
                           ToolTipService.ToolTip="New File"
-                          Click="NewFileButton_Click">
+                          Click="NewFileButton_Click"
+                          Width="45">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xED0E;"/>
                 </AppBarButton.Icon>
@@ -34,7 +35,8 @@
                           Label="Open File"
                           AccessKey="O"
                           ToolTipService.ToolTip="Open File"
-                          Click="OpenFileButton_Click">
+                          Click="OpenFileButton_Click"
+                          Width="45">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE8E5;"/>
                 </AppBarButton.Icon>
@@ -43,7 +45,8 @@
                           Label="Open Folder"
                           AccessKey="F"
                           ToolTipService.ToolTip="Open Folder"
-                          Click="OpenFolderButton_Click">
+                          Click="OpenFolderButton_Click"
+                          Width="45">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE838;"/>
                 </AppBarButton.Icon>
@@ -52,7 +55,8 @@
                         Label="Save" IsEnabled="False"
                           AccessKey="S"
                         ToolTipService.ToolTip="Save"
-                        Click="SaveFileButton_Click">
+                        Click="SaveFileButton_Click"
+                          Width="45">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE74E;"/>
                 </AppBarButton.Icon>
@@ -60,20 +64,23 @@
             <AppBarSeparator/>
             <AppBarButton x:Name="RenameFileButton"
                         Label="Rename" IsEnabled="False"
-                        ToolTipService.ToolTip="Rename">
+                        ToolTipService.ToolTip="Rename"
+                          Width="45">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE8AC;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton x:Name="DeleteFileButton" 
                           Label="Delete" IsEnabled="False"
-                        ToolTipService.ToolTip="Delete">
+                        ToolTipService.ToolTip="Delete"
+                          Width="45">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE74D;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
         </CommandBar>
-        <NavigationView Grid.Row="1" x:Name="EditorNavigationView"
+        <NavigationView Grid.Row="1" 
+                        x:Name="EditorNavigationView"
                         IsPaneToggleButtonVisible="False"
                         IsBackButtonVisible="Collapsed"
                         IsSettingsVisible="False"
@@ -96,7 +103,7 @@
                            IsPaneOpen="True"
                            OpenPaneLength="300"
                            DisplayMode="Inline"
-                           Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"> 
+                           Background="Transparent"> 
                     <SplitView.Pane>
                         <TreeView x:Name="FileTreeView"
                                   SelectionMode="Single"

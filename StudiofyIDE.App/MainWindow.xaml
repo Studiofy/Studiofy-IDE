@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
 <WinUI_X:WindowEx
     x:Class="WindowsCode.Studio.MainWindow"
     xmlns:WinUI_X="using:WinUIEx"
@@ -110,7 +113,8 @@
                                 </MenuFlyoutSubItem.Icon>
                                 <MenuFlyoutSubItem.Items>
                                     <MenuFlyoutItem x:Name="NewFile"
-                                                Text="File...">
+                                                Text="File..."
+                                                    Click="NewFile_Click">
                                         <MenuFlyoutItem.Icon>
                                             <SymbolIcon Symbol="Document"/>
                                         </MenuFlyoutItem.Icon>
@@ -346,8 +350,8 @@
                      Title="Canary Build"
                      Severity="Warning"
                      Message="This build may contain incomplete features and bugs"
-                     CornerRadius="0"
-                     BorderThickness="0"/>
+                     Padding="0"
+                     Margin="5,0"/>
             <Frame x:Name="ContentProvider"
                    Grid.Row="2"
                    x:FieldModifier="Public"/>

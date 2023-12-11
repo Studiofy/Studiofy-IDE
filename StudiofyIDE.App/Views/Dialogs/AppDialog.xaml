@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="WindowsCode.Studio.Views.Dialogs.AppDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WindowsCode.Studio.Views.Dialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" CornerRadius="4"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ContentDialog.TitleTemplate>
+        <DataTemplate x:DataType="local:AppDialog">
+            <Grid>
+                <FontIcon Glyph="{x:Bind Icon.Glyph}" HorizontalAlignment="Left" Margin="0,2,10,0"/>
+                <TextBlock Text="{x:Bind Title}" FontFamily="Segoe UI Variable Display" FontWeight="SemiBold" FontSize="24" Margin="30,0,0,0"/>
+            </Grid>
+        </DataTemplate>
+    </ContentDialog.TitleTemplate>
+
+    <Grid Height="300" Width="500">
+        
+    </Grid>
+</ContentDialog>

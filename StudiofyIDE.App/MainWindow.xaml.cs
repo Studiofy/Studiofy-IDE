@@ -12,8 +12,9 @@ using System.Runtime.InteropServices;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
-using WindowsCode.Core.Services;
+using WindowsCode.Studio.Services;
 using WindowsCode.Studio.Views;
+using WindowsCode.Studio.Views.Dialogs;
 using WinRT.Interop;
 using WinUIEx;
 
@@ -259,6 +260,33 @@ namespace WindowsCode.Studio
         private void ShowWelcomePage_Click(object sender, RoutedEventArgs e)
         {
             ContentProvider.Navigate(typeof(WelcomePage));
+        }
+
+        private async void NewFile_Click(object sender, RoutedEventArgs e)
+        {
+            New_File newFileDialog = new()
+            {
+                XamlRoot = Content.XamlRoot
+            };
+
+            ContentDialogResult dialogResult = await newFileDialog.ShowAsync();
+
+            if (dialogResult == ContentDialogResult.Primary && !string.IsNullOrEmpty(newFileDialog._fileName))
+            {
+
+            }
+            else
+            {
+                ContentDialog errorDialog = new()
+                {
+                    Title = "Error",
+                    Content = "Invalid File Name",
+                    CloseButtonText = "OK",
+                    DefaultButton = ContentDialogButton.Close
+                };
+                errorDialog.XamlRoot = Content.XamlRoot;
+                await errorDialog.ShowAsync();
+            }
         }
     }
 }

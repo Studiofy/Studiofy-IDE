@@ -9,7 +9,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Windows.Management.Deployment;
 
-namespace WindowsCode.Core.Services
+namespace WindowsCode.Studio.Services
 {
     public class UpdateService
     {

@@ -32,17 +32,20 @@ namespace WindowsCode.Studio.Views
 
         public static EditorPage _activePage;
 
-        private FileTabViewModel TabItem;
+        private EditorTabViewModel EditorTabManager;
 
         private EditBoxTabView editor;
 
         private StorageFile _activeFile;
 
+        public List<IStorageItem> storageItems;
+
         public EditorPage()
         {
             _activePage = this;
             InitializeComponent();
-            TabItem = new();
+            EditorTabManager = new(FileTabView);
+            EditorNavigationView.SelectedItem = EditorNavigationView.MenuItems[0];
         }
 
         private async void NewFileButton_Click(object sender, RoutedEventArgs e)
@@ -105,7 +108,7 @@ namespace WindowsCode.Studio.Views
                 }
                 else
                 {
-                    TabItem.CreateTabItem(FileTabView, FileNameTextBox.Text + FileExtensionBox.SelectedValue.ToString());
+                    EditorTabManager.CreateTabItem($"{FileNameTextBox.Text}{FileExtensionBox.SelectedValue}", new EditBoxTabView());
                     FileTabView.SelectedIndex = 0;
                 }
             }
@@ -177,7 +180,7 @@ namespace WindowsCode.Studio.Views
                     await errorDialog.ShowAsync();
                 }
 
-                TabItem.CreateTabItem(FileTabView, File.Path, editor);
+                EditorTabManager.CreateTabItem(File.Path, editor);
                 FileTabView.SelectedIndex += 1;
             }
         }
@@ -246,7 +249,7 @@ namespace WindowsCode.Studio.Views
                         _activeFile = StorageFile.GetFileFromPathAsync(filePath).AsTask().GetAwaiter().GetResult();
 
                         // Return the file
-                        return _activeFile;
+                        return _activeFile ?? null;
                     }
                     catch (Exception ex)
                     {
@@ -259,7 +262,7 @@ namespace WindowsCode.Studio.Views
 
             // Set _activeFile to null if there's an issue
             _activeFile = null;
-            return _activeFile;
+            return _activeFile ?? null;
         }
 
         private async void SaveFileButton_Click(object sender, RoutedEventArgs e)
@@ -493,7 +496,7 @@ namespace WindowsCode.Studio.Views
 
                                     // Find if there's a tab Item that has the header of File.Path
 
-                                    TabItem.CreateTabItem(FileTabView, File.Path, editor);
+                                    EditorTabManager.CreateTabItem(File.Path, editor);
                                     FileTabView.SelectedIndex += 1;
                                 }
                             }
@@ -545,7 +548,7 @@ namespace WindowsCode.Studio.Views
             {
                 if (tabItem.Header != null && tabItem.Header.ToString() == header)
                 {
-                    return tabItem;
+                    return tabItem ?? null;
                 }
             }
 

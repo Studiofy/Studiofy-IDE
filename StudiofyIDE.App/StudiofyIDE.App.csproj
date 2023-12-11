@@ -27,6 +27,7 @@
     <NeutralLanguage>en-PH</NeutralLanguage>
     <ApplicationIcon>Assets\CodeStudioCanary.ico</ApplicationIcon>
     <SupportedOSPlatformVersion>10.0.22000.0</SupportedOSPlatformVersion>
+    <UseWPF>False</UseWPF>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="CustomControl\**" />
@@ -37,6 +38,9 @@
   <ItemGroup>
     <None Remove="Assets\CodeStudioCanary.ico" />
     <None Remove="SplashScreen.xaml" />
+    <None Remove="Styles\CustomStyleDictionary.xaml" />
+    <None Remove="Views\AppDialog.xaml" />
+    <None Remove="Views\Dialogs\New File.xaml" />
     <None Remove="Views\EditorPage.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\TabViews\EditBoxTabView.xaml" />
@@ -119,7 +123,22 @@
     <ProjectReference Include="..\StudiofyIDE.Core\StudiofyIDE.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Views\AppDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Views\MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\CustomStyleDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\Dialogs\New File.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

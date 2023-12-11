@@ -24,6 +24,8 @@
                      x:Name="CodeEditor"
                      x:FieldModifier="Public"
                      FontFamily="Cascadia Mono"
-                     FontSize="14"/>
+                     FontSize="14.5"
+                     Style="{StaticResource RichEditBoxCustomStyle}"
+                     KeyDown="CodeEditor_KeyDown"/>
     </Grid>
 </Page>
