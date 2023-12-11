@@ -113,10 +113,10 @@ namespace WindowsCode.Studio
                             await errorDialog.ShowAsync();
                         }
                     }
-                    //else
-                    //{
-                    //    AccountPicture.Initials = firstName[0].ToString() + lastName[0].ToString();
-                    //}
+                    else
+                    {
+                        AccountPicture.Initials = firstName[0].ToString() + lastName[0].ToString();
+                    }
                     displayName = string.Format("{0} {1}", firstName, lastName);
                     AccountEmail.Text = email;
                     AccountName.Text = displayName;
