@@ -255,5 +255,10 @@ namespace WindowsCode.Studio
                 _ = Process.Start(new ProcessStartInfo(browser, url));
             }
         }
+
+        private void ShowWelcomePage_Click(object sender, RoutedEventArgs e)
+        {
+            ContentProvider.Navigate(typeof(WelcomePage));
+        }
     }
 }

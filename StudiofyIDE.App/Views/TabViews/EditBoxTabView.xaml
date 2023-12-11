@@ -16,8 +16,14 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+
+        <RichEditBox Grid.Row="0"
+                     Grid.Column="0"
+                     x:Name="CodeEditor"
+                     x:FieldModifier="Public"
+                     FontFamily="Cascadia Mono"
+                     FontSize="14"/>
     </Grid>
 </Page>

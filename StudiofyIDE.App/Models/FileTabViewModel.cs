@@ -36,5 +36,15 @@ namespace WindowsCode.Studio.Models
             tabView.TabItems.Add(_tabItem);
             return _tabItem;
         }
+
+        public (TabView, string, object) GetTabItem(TabView tabView, string tabHeader, object contents)
+        {
+            return (tabView, tabHeader, contents);
+        }
+
+        public object GetFileContent(object content)
+        {
+            return content;
+        }
     }
 }

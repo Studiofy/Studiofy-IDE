@@ -23,6 +23,7 @@
                     OverflowButtonVisibility="Collapsed">
             <AppBarButton x:Name="NewFileButton"
                           Label="New"
+                          AccessKey="N"
                           ToolTipService.ToolTip="New File"
                           Click="NewFileButton_Click">
                 <AppBarButton.Icon>
@@ -30,15 +31,26 @@
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton x:Name="OpenFileButton"
-                          Label="Open"
+                          Label="Open File"
+                          AccessKey="O"
                           ToolTipService.ToolTip="Open File"
                           Click="OpenFileButton_Click">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE8E5;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
+            <AppBarButton x:Name="OpenFolderButton"
+                          Label="Open Folder"
+                          AccessKey="F"
+                          ToolTipService.ToolTip="Open Folder"
+                          Click="OpenFolderButton_Click">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE838;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
             <AppBarButton x:Name="SaveFileButton"
                         Label="Save" IsEnabled="False"
+                          AccessKey="S"
                         ToolTipService.ToolTip="Save"
                         Click="SaveFileButton_Click">
                 <AppBarButton.Icon>
@@ -61,27 +73,49 @@
                 </AppBarButton.Icon>
             </AppBarButton>
         </CommandBar>
-        <SplitView x:Name="EditorSplitView"
-                   Grid.Row="1"
-                   IsPaneOpen="True"
-                   OpenPaneLength="300"
-                   DisplayMode="Inline"
-                   Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}">
-            <SplitView.Pane>
-                <ListView x:Name="FileListView"
-                          SelectionMode="Single"
-                          SelectionChanged="FileListView_SelectionChanged"/>
-            </SplitView.Pane>
-            <SplitView.Content>
-                <TabView x:Name="FileTabView"
-                         x:FieldModifier="Public"
-                         Loaded="FileTabView_Loaded"
-                         VerticalAlignment="Stretch"
-                         HorizontalAlignment="Stretch"
-                         IsAddTabButtonVisible="False"
-                         SelectionChanged="FileTabView_SelectionChanged"
-                         TabCloseRequested="FileTabView_TabCloseRequested"/>
-            </SplitView.Content>
-        </SplitView>
+        <NavigationView Grid.Row="1" x:Name="EditorNavigationView"
+                        IsPaneToggleButtonVisible="False"
+                        IsBackButtonVisible="Collapsed"
+                        IsSettingsVisible="False"
+                        PaneDisplayMode="LeftCompact"
+                        OpenPaneLength="200">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Explorer">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE8B7;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Search">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE721;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+            <NavigationView.Content>
+                <SplitView x:Name="EditorSplitView"
+                           IsPaneOpen="True"
+                           OpenPaneLength="300"
+                           DisplayMode="Inline"
+                           Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"> 
+                    <SplitView.Pane>
+                        <TreeView x:Name="FileTreeView"
+                                  SelectionMode="Single"
+                                  SelectionChanged="FileTreeView_SelectionChanged"
+                                  Margin="0,2,0,0"/>
+                    </SplitView.Pane>
+                    <SplitView.Content>
+                        <TabView x:Name="FileTabView"
+                                 x:FieldModifier="Public"
+                                 Loaded="FileTabView_Loaded"
+                                 VerticalAlignment="Stretch"
+                                 HorizontalAlignment="Stretch"
+                                 IsAddTabButtonVisible="False"
+                                 SelectionChanged="FileTabView_SelectionChanged"
+                                 TabCloseRequested="FileTabView_TabCloseRequested"/>
+                    </SplitView.Content>
+                </SplitView>
+            </NavigationView.Content>
+        </NavigationView>
+        
     </Grid>
 </Page>

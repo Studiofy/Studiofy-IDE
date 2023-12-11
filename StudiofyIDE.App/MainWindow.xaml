@@ -162,7 +162,8 @@
                                     </MenuFlyoutItem>
                                 </MenuFlyoutSubItem.Items>
                             </MenuFlyoutSubItem>
-                            <MenuFlyoutItem Text="Show Welcome Page">
+                            <MenuFlyoutItem Text="Show Welcome Page"
+                                            Click="ShowWelcomePage_Click">
                                 <MenuFlyoutItem.Icon>
                                     <FontIcon Glyph="&#xE80F;"/>
                                 </MenuFlyoutItem.Icon>

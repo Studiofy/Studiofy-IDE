@@ -38,6 +38,7 @@
     <None Remove="Assets\CodeStudioCanary.ico" />
     <None Remove="SplashScreen.xaml" />
     <None Remove="Views\EditorPage.xaml" />
+    <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\TabViews\EditBoxTabView.xaml" />
     <None Remove="Views\WelcomePage.xaml" />
   </ItemGroup>
@@ -116,5 +117,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StudiofyIDE.Core\StudiofyIDE.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>
