@@ -22,7 +22,7 @@
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <PackageCertificateKeyFile>StudiofyIDE.App_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AssemblyName>StudiofyIDE</AssemblyName>
-    <Version>1.0.0</Version>
+    <Version>1.0.1026</Version>
     <Copyright>Copyright © 2023 Studiofy. All Rights Reserved.</Copyright>
     <NeutralLanguage>en-PH</NeutralLanguage>
     <ApplicationIcon>Assets\CodeStudioCanary.ico</ApplicationIcon>
@@ -40,7 +40,9 @@
     <None Remove="SplashScreen.xaml" />
     <None Remove="Styles\CustomStyleDictionary.xaml" />
     <None Remove="Views\AppDialog.xaml" />
+    <None Remove="Views\Dialogs\AboutDialog.xaml" />
     <None Remove="Views\Dialogs\New File.xaml" />
+    <None Remove="Views\Dialogs\SettingsPage.xaml" />
     <None Remove="Views\EditorPage.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\TabViews\EditBoxTabView.xaml" />
@@ -121,6 +123,16 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StudiofyIDE.Core\StudiofyIDE.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\Dialogs\AboutDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\Dialogs\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\AppDialog.xaml">

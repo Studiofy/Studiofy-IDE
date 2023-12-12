@@ -10,7 +10,7 @@ namespace WindowsCode.Studio.Views.Dialogs
     /// </summary>
     public sealed partial class New_File : ContentDialog
     {
-        public string _fileName { get; set; }
+        private string _fileName;
 
         public New_File()
         {
@@ -19,7 +19,17 @@ namespace WindowsCode.Studio.Views.Dialogs
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            _fileName = FileNameTextBox.Text;
+            SetFileName(FileNameTextBox.Text);
+        }
+
+        public string GetFileName()
+        {
+            return _fileName ?? null;
+        }
+
+        public void SetFileName(string fileName)
+        {
+            _fileName = fileName;
         }
     }
 }

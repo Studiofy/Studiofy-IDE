@@ -302,7 +302,8 @@
                             <MenuFlyoutSeparator/>
                             <MenuFlyoutItem Text="Import &amp; Export Settings"/>
                             <MenuFlyoutItem x:Name="AppOptionButton" 
-                                        Text="Options">
+                                        Text="Settings"
+                                            Click="AppOptionButton_Click">
                                 <MenuFlyoutItem.KeyboardAccelerators>
                                     <KeyboardAccelerator Modifiers="Control,Menu"
                                                      Key="O"/>
@@ -346,12 +347,16 @@
             <InfoBar x:Name="AppInfoReporter"
                      Grid.Row="1"
                      IsOpen="True"
-                     IsClosable="True"
-                     Title="Canary Build"
-                     Severity="Warning"
-                     Message="This build may contain incomplete features and bugs"
-                     Padding="0"
-                     Margin="5,0"/>
+                     IsClosable="False"
+                     Title="Confidential"
+                     Severity="Error"
+                     Message="This version of Studiofy IDE is for internal testing only. Do not distribute the application without the owner's permission."
+                     Margin="5,0">
+                <InfoBar.ActionButton>
+                    <HyperlinkButton Content="Learn More"
+                                     NavigateUri="https://github.com/Studiofy/Studiofy-IDE?tab=readme-ov-file#permission"/>
+                </InfoBar.ActionButton>
+            </InfoBar>
             <Frame x:Name="ContentProvider"
                    Grid.Row="2"
                    x:FieldModifier="Public"/>

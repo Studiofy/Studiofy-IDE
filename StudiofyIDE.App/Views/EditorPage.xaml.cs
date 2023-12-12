@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
-using WindowsCode.Studio.Models;
+using WindowsCode.Studio.Services;
 using WindowsCode.Studio.Views.TabViews;
 using WinRT.Interop;
 
@@ -30,9 +30,11 @@ namespace WindowsCode.Studio.Views
 
         private string _activeFolder;
 
-        public static EditorPage _activePage;
+        private TabService TabService;
 
-        private EditorTabViewModel EditorTabManager;
+        private FileService FileService;
+
+        public static EditorPage _activePage;
 
         private EditBoxTabView editor;
 
@@ -42,10 +44,14 @@ namespace WindowsCode.Studio.Views
 
         public EditorPage()
         {
-            _activePage = this;
             InitializeComponent();
-            EditorTabManager = new(FileTabView);
+
+            _activePage = this;
+            App.SetEditorPage(this);
             EditorNavigationView.SelectedItem = EditorNavigationView.MenuItems[0];
+
+            FileService = new();
+            TabService = new(FileTabView);
         }
 
         private async void NewFileButton_Click(object sender, RoutedEventArgs e)
@@ -108,7 +114,7 @@ namespace WindowsCode.Studio.Views
                 }
                 else
                 {
-                    EditorTabManager.CreateTabItem($"{FileNameTextBox.Text}{FileExtensionBox.SelectedValue}", new EditBoxTabView());
+                    TabService.CreateTabItem($"{FileNameTextBox.Text}{FileExtensionBox.SelectedValue}", new EditBoxTabView());
                     FileTabView.SelectedIndex = 0;
                 }
             }
@@ -118,7 +124,7 @@ namespace WindowsCode.Studio.Views
         {
             FileOpenPicker FilePicker = new();
 
-            nint hwnd = WindowNative.GetWindowHandle(MainWindow.activeWindow);
+            nint hwnd = WindowNative.GetWindowHandle(App.GetMainWindow());
             InitializeWithWindow.Initialize(FilePicker, hwnd);
 
             foreach (string item in fileExtensions)
@@ -126,63 +132,68 @@ namespace WindowsCode.Studio.Views
                 FilePicker.FileTypeFilter.Add(item);
             }
 
-            StorageFile File = await FilePicker.PickSingleFileAsync();
+            editor = new EditBoxTabView();
 
-            if (File == null)
-            {
-                ContentDialog errorDialog = new()
-                {
-                    Title = "Error",
-                    Content = "File is Null",
-                    CloseButtonText = "OK",
-                    DefaultButton = ContentDialogButton.Close
-                };
-                errorDialog.XamlRoot = Content.XamlRoot;
-                await errorDialog.ShowAsync();
-            }
-            else
-            {
-                editor = new();
+            FileService.SetEditor(editor);
+            FileService.SetTabService(TabService);
 
-                RichEditBox codeEditor = editor.CodeEditor;
+            await FileService.OpenSelectedFile(await FilePicker.PickSingleFileAsync(), Content, editor.CodeEditor, FileTabView);
 
-                if (codeEditor != null)
-                {
-                    string fileContent = await FileIO.ReadTextAsync(File);
+            //if (File == null)
+            //{
+            //    ContentDialog errorDialog = new()
+            //    {
+            //        Title = "Error",
+            //        Content = "File is Null",
+            //        CloseButtonText = "OK",
+            //        DefaultButton = ContentDialogButton.Close
+            //    };
+            //    errorDialog.XamlRoot = Content.XamlRoot;
+            //    await errorDialog.ShowAsync();
+            //}
+            //else
+            //{
+            //    editor = new();
 
-                    if (string.IsNullOrEmpty(fileContent))
-                    {
-                        ContentDialog errorDialog = new()
-                        {
-                            Title = "Error",
-                            Content = "Cannot Add File Contents",
-                            CloseButtonText = "OK",
-                            DefaultButton = ContentDialogButton.Close
-                        };
-                        errorDialog.XamlRoot = Content.XamlRoot;
-                        await errorDialog.ShowAsync();
-                    }
-                    else
-                    {
-                        codeEditor.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, fileContent);
-                    }
-                }
-                else
-                {
-                    ContentDialog errorDialog = new()
-                    {
-                        Title = "Error",
-                        Content = "Cannot Read File",
-                        CloseButtonText = "OK",
-                        DefaultButton = ContentDialogButton.Close
-                    };
-                    errorDialog.XamlRoot = Content.XamlRoot;
-                    await errorDialog.ShowAsync();
-                }
+            //    RichEditBox codeEditor = editor.CodeEditor;
 
-                EditorTabManager.CreateTabItem(File.Path, editor);
-                FileTabView.SelectedIndex += 1;
-            }
+            //    if (codeEditor != null)
+            //    {
+            //        string fileContent = await FileIO.ReadTextAsync(File);
+
+            //        if (string.IsNullOrEmpty(fileContent))
+            //        {
+            //            ContentDialog errorDialog = new()
+            //            {
+            //                Title = "Error",
+            //                Content = "Cannot Add File Contents",
+            //                CloseButtonText = "OK",
+            //                DefaultButton = ContentDialogButton.Close
+            //            };
+            //            errorDialog.XamlRoot = Content.XamlRoot;
+            //            await errorDialog.ShowAsync();
+            //        }
+            //        else
+            //        {
+            //            codeEditor.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, fileContent);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        ContentDialog errorDialog = new()
+            //        {
+            //            Title = "Error",
+            //            Content = "Cannot Read File",
+            //            CloseButtonText = "OK",
+            //            DefaultButton = ContentDialogButton.Close
+            //        };
+            //        errorDialog.XamlRoot = Content.XamlRoot;
+            //        await errorDialog.ShowAsync();
+            //    }
+
+            //    TabService.CreateTabItem(File.Path, editor);
+            //    FileTabView.SelectedIndex += 1;
+            //}
         }
 
         private async void OpenFolderButton_Click(object sender, RoutedEventArgs e)
@@ -192,7 +203,7 @@ namespace WindowsCode.Studio.Views
                 SuggestedStartLocation = PickerLocationId.Desktop
             };
 
-            nint hwnd = WindowNative.GetWindowHandle(MainWindow.activeWindow);
+            nint hwnd = WindowNative.GetWindowHandle(App.GetMainWindow());
             InitializeWithWindow.Initialize(FolderPicker, hwnd);
 
             FolderPicker.FileTypeFilter.Add("*");
@@ -329,7 +340,7 @@ namespace WindowsCode.Studio.Views
                 // Update the tabHeader of selected tabItem
                 TabViewItem selectedTabItem = FileTabView.SelectedItem as TabViewItem;
 
-                nint hwnd = WindowNative.GetWindowHandle(MainWindow.activeWindow);
+                nint hwnd = WindowNative.GetWindowHandle(App.GetMainWindow());
                 InitializeWithWindow.Initialize(filePicker, hwnd);
 
                 filePicker.FileTypeChoices.Add("Text File (.txt)", new List<string>() { ".txt" });
@@ -414,6 +425,15 @@ namespace WindowsCode.Studio.Views
                     }
                 }
             }
+
+            TabViewItem selectedTab = FileTabView.SelectedItem as TabViewItem;
+            if (selectedTab != null)
+            {
+                if (selectedTab.Header.ToString() != "Welcome")
+                {
+                    FilePreviewer.Source = new Uri(selectedTab.Header.ToString());
+                }
+            }
         }
 
         private async void FileTreeView_SelectionChanged(object sender, TreeViewSelectionChangedEventArgs args)
@@ -436,13 +456,75 @@ namespace WindowsCode.Studio.Views
                         // Get the StorageFile
                         try
                         {
-                            File = await StorageFile.GetFileFromPathAsync(_activeFolder + $"\\{filePath}");
+                            if (selectedNode.HasChildren)
+                            {
+                                selectedNode.IsExpanded = true;
+                            }
+                            else
+                            {
+                                File = await StorageFile.GetFileFromPathAsync(_activeFolder + $"\\{filePath}");
+
+                                if (File != null)
+                                {
+                                    TabViewItem existingTab = FindTabByHeader(FileTabView, File.Path);
+
+                                    if (existingTab != null)
+                                    {
+                                        FileTabView.SelectedItem = existingTab;
+                                    }
+                                    else
+                                    {
+                                        editor = new();
+
+                                        RichEditBox codeEditor = editor.CodeEditor;
+
+                                        try
+                                        {
+                                            string fileContent = await FileIO.ReadTextAsync(File);
+
+                                            if (string.IsNullOrEmpty(fileContent))
+                                            {
+                                                ContentDialog errorDialog = new()
+                                                {
+                                                    Title = "Error",
+                                                    Content = "Cannot Add File Contents",
+                                                    CloseButtonText = "OK",
+                                                    DefaultButton = ContentDialogButton.Close
+                                                };
+                                                errorDialog.XamlRoot = Content.XamlRoot;
+                                                await errorDialog.ShowAsync();
+                                            }
+                                            else
+                                            {
+                                                codeEditor.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, fileContent);
+
+                                                // Find if there's a tab Item that has the header of File.Path
+
+                                                TabService.CreateTabItem(File.Path, editor);
+                                                FileTabView.SelectedIndex += 1;
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            ContentDialog errorDialog = new()
+                                            {
+                                                Title = $"{ex.Source} throws an Exception",
+                                                Content = ex.Message.Split('\n')[0],
+                                                CloseButtonText = "OK",
+                                                DefaultButton = ContentDialogButton.Close
+                                            };
+                                            errorDialog.XamlRoot = Content.XamlRoot;
+                                            await errorDialog.ShowAsync();
+                                        }
+                                    }
+                                }
+                            }
                         }
                         catch (Exception ex)
                         {
                             ContentDialog errorDialog = new()
                             {
-                                Title = $"{ex.Source} throws an Exception",
+                                Title = $"Error on Reading File",
                                 Content = ex.Message.Split('\n')[0],
                                 CloseButtonText = "OK",
                                 DefaultButton = ContentDialogButton.Close
@@ -458,59 +540,59 @@ namespace WindowsCode.Studio.Views
 
                         // Get the StorageFile
                         File = await StorageFile.GetFileFromPathAsync(filePath);
-                    }
 
-                    if (File != null)
-                    {
-                        TabViewItem existingTab = FindTabByHeader(FileTabView, File.Path);
-
-                        if (existingTab != null)
+                        if (File != null)
                         {
-                            FileTabView.SelectedItem = existingTab;
-                        }
-                        else
-                        {
-                            editor = new();
+                            TabViewItem existingTab = FindTabByHeader(FileTabView, File.Path);
 
-                            RichEditBox codeEditor = editor.CodeEditor;
-
-                            try
+                            if (existingTab != null)
                             {
-                                string fileContent = await FileIO.ReadTextAsync(File);
+                                FileTabView.SelectedItem = existingTab;
+                            }
+                            else
+                            {
+                                editor = new();
 
-                                if (string.IsNullOrEmpty(fileContent))
+                                RichEditBox codeEditor = editor.CodeEditor;
+
+                                try
+                                {
+                                    string fileContent = await FileIO.ReadTextAsync(File);
+
+                                    if (string.IsNullOrEmpty(fileContent))
+                                    {
+                                        ContentDialog errorDialog = new()
+                                        {
+                                            Title = "Error",
+                                            Content = "Cannot Add File Contents",
+                                            CloseButtonText = "OK",
+                                            DefaultButton = ContentDialogButton.Close
+                                        };
+                                        errorDialog.XamlRoot = Content.XamlRoot;
+                                        await errorDialog.ShowAsync();
+                                    }
+                                    else
+                                    {
+                                        codeEditor.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, fileContent);
+
+                                        // Find if there's a tab Item that has the header of File.Path
+
+                                        TabService.CreateTabItem(File.Path, editor);
+                                        FileTabView.SelectedIndex += 1;
+                                    }
+                                }
+                                catch (Exception ex)
                                 {
                                     ContentDialog errorDialog = new()
                                     {
-                                        Title = "Error",
-                                        Content = "Cannot Add File Contents",
+                                        Title = $"{ex.Source} throws an Exception",
+                                        Content = ex.Message.Split('\n')[0],
                                         CloseButtonText = "OK",
                                         DefaultButton = ContentDialogButton.Close
                                     };
                                     errorDialog.XamlRoot = Content.XamlRoot;
                                     await errorDialog.ShowAsync();
                                 }
-                                else
-                                {
-                                    codeEditor.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, fileContent);
-
-                                    // Find if there's a tab Item that has the header of File.Path
-
-                                    EditorTabManager.CreateTabItem(File.Path, editor);
-                                    FileTabView.SelectedIndex += 1;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                ContentDialog errorDialog = new()
-                                {
-                                    Title = $"{ex.Source} throws an Exception",
-                                    Content = ex.Message.Split('\n')[0],
-                                    CloseButtonText = "OK",
-                                    DefaultButton = ContentDialogButton.Close
-                                };
-                                errorDialog.XamlRoot = Content.XamlRoot;
-                                await errorDialog.ShowAsync();
                             }
                         }
                     }
@@ -556,29 +638,96 @@ namespace WindowsCode.Studio.Views
             return null;
         }
 
-        private void FileTabView_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void FileTabView_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
         {
             sender.TabItems.Remove(args.Item);
+
+            if (args.Tab.Header.ToString() != "Welcome")
+            {
+                if (sender.TabItems.Count is 0)
+                {
+                    TabService tabService = new(sender);
+                    tabService.CreateTabItem("Welcome", new WelcomePage());
+                    tabService.GetTabView().SelectedIndex += 1;
+                }
+                else
+                {
+                    sender.SelectedIndex = 0;
+                }
+            }
         }
 
         private void FileTabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (FileTabView.TabItems.Count != 0)
             {
-                SaveFileButton.IsEnabled = true;
-                RenameFileButton.IsEnabled = true;
-                DeleteFileButton.IsEnabled = true;
+                TabViewItem selectedTab = FileTabView.SelectedItem as TabViewItem;
+                if (selectedTab != null && selectedTab.Header.ToString() != "Welcome" && selectedTab.Header.ToString() != "Settings")
+                {
+                    try
+                    {
+                        FilePreviewer.Source = new Uri(selectedTab.Header.ToString());
+                    }
+                    catch (Exception)
+                    {
+                        FilePreviewer.Source = new Uri("about:blank");
+                        PreviewFileButton.IsEnabled = false;
+                    }
+                    SaveFileButton.IsEnabled = true;
+                    RenameFileButton.IsEnabled = true;
+                    DeleteFileButton.IsEnabled = true;
+                    PreviewFileButton.IsEnabled = true;
+                }
+                else
+                {
+                    FilePreviewer.Source = new Uri("about:blank");
+                    SaveFileButton.IsEnabled = false;
+                    RenameFileButton.IsEnabled = false;
+                    DeleteFileButton.IsEnabled = false;
+                    PreviewFileButton.IsEnabled = false;
+                }
             }
             else
             {
                 SaveFileButton.IsEnabled = false;
                 RenameFileButton.IsEnabled = false;
                 DeleteFileButton.IsEnabled = false;
+                PreviewFileButton.IsEnabled = false;
+            }
+        }
+
+        private void PreviewFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            bool toggleResult = PreviewFileButton.IsChecked != true ? false : true;
+
+            TabViewItem selectedTab = FileTabView?.SelectedItem as TabViewItem;
+
+            if (toggleResult)
+            {
+                if (selectedTab != null)
+                {
+                    if (selectedTab.Header.ToString() != "Welcome" && selectedTab.Header.ToString() != "Settings")
+                    {
+                        try
+                        {
+                            FilePreviewer.Source = new Uri(selectedTab.Header.ToString());
+                        }
+                        catch (Exception)
+                        {
+                            FilePreviewer.Source = new Uri("about:blank");
+                        }
+                        PreviewSplitView.IsPaneOpen = true;
+                        PreviewFileButton.IsChecked = true;
+                    }
+                }
+            }
+            else
+            {
+                if (selectedTab != null)
+                {
+                    PreviewSplitView.IsPaneOpen = false;
+                    PreviewFileButton.IsChecked = false;
+                }
             }
         }
     }

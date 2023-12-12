@@ -18,7 +18,7 @@
         <CommandBar x:Name="AppCommandBar"
                     Grid.Row="0"
                     DefaultLabelPosition="Collapsed"
-                    HorizontalAlignment="Left"
+                    HorizontalAlignment="Stretch"
                     IsDynamicOverflowEnabled="False"
                     OverflowButtonVisibility="Collapsed">
             <AppBarButton x:Name="NewFileButton"
@@ -78,6 +78,15 @@
                     <FontIcon Glyph="&#xE74D;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
+            <AppBarToggleButton x:Name="PreviewFileButton"
+                                Label="Preview File"
+                                ToolTipService.ToolTip="Preview File"
+                                Width="45" HorizontalAlignment="Right"
+                                Click="PreviewFileButton_Click">
+                <AppBarToggleButton.Icon>
+                    <FontIcon Glyph="&#xE8ff;"/>
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
         </CommandBar>
         <NavigationView Grid.Row="1" 
                         x:Name="EditorNavigationView"
@@ -111,14 +120,26 @@
                                   Margin="0,2,0,0"/>
                     </SplitView.Pane>
                     <SplitView.Content>
-                        <TabView x:Name="FileTabView"
-                                 x:FieldModifier="Public"
-                                 Loaded="FileTabView_Loaded"
-                                 VerticalAlignment="Stretch"
-                                 HorizontalAlignment="Stretch"
-                                 IsAddTabButtonVisible="False"
-                                 SelectionChanged="FileTabView_SelectionChanged"
-                                 TabCloseRequested="FileTabView_TabCloseRequested"/>
+                        <SplitView x:Name="PreviewSplitView"
+                                   OpenPaneLength="500"
+                                   DisplayMode="Inline"
+                                   PanePlacement="Right">
+                            <SplitView.Pane>
+                                <WebView2 x:Name="FilePreviewer" 
+                                          Width="500" 
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Stretch"/>
+                            </SplitView.Pane>
+                            <SplitView.Content>
+                                <TabView x:Name="FileTabView"
+                                         x:FieldModifier="Public"
+                                         VerticalAlignment="Stretch"
+                                         HorizontalAlignment="Stretch"
+                                         IsAddTabButtonVisible="False"
+                                         SelectionChanged="FileTabView_SelectionChanged"
+                                         TabCloseRequested="FileTabView_TabCloseRequested"/>    
+                            </SplitView.Content>
+                        </SplitView>
                     </SplitView.Content>
                 </SplitView>
             </NavigationView.Content>

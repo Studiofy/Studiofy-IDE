@@ -22,4 +22,9 @@ A simple Integrated Development Environment for Windows 11
 ## Current Channel
 The current channel that is available for this application is only `Canary` channel.
 
+## Permission
+- People outside the Studiofy Organization are prohibited in distributing this application. 
+- This subjects to Republic Act No. 10175 or the Cybercrime Prevention Act of 2012 (Philippines).
+- This subjects to Digital Millenium Copyright Act (DMCA) of 1998 criminalizes evasion of copy protection, destruction or mismanagement of copyright management information, and other acts that infringe the rights of software owner/s.
+
 Copyright © 2023 Studiofy

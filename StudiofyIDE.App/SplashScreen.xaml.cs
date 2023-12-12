@@ -48,7 +48,7 @@ namespace WindowsCode.Studio
 
         protected override async Task OnLoading()
         {
-            for (int i = 0; i <= 10; i++)
+            for (int i = 0; i <= 5; i++)
             {
                 LoadingBar.IsIndeterminate = true;
                 DisplayRandomTip();

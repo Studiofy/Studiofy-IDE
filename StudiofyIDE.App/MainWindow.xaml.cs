@@ -5,7 +5,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -15,6 +14,7 @@ using Windows.System;
 using WindowsCode.Studio.Services;
 using WindowsCode.Studio.Views;
 using WindowsCode.Studio.Views.Dialogs;
+using WindowsCode.Studio.Views.TabViews;
 using WinRT.Interop;
 using WinUIEx;
 
@@ -23,17 +23,19 @@ namespace WindowsCode.Studio
     public sealed partial class MainWindow : WindowEx
     {
         private readonly AppWindow m_AppWindow;
-        public static MainWindow activeWindow;
 
         public MainWindow()
         {
-            activeWindow = this;
-            PersistenceId = "MainWindow";
             InitializeComponent();
+
+            PersistenceId = "MainWindow";
+
+            App.SetMainWindow(this);
+            WelcomePage welcome = new();
+            ContentProvider.Navigate(welcome.GetType());
+
             CheckWindowsVersion();
             GetCurrentUserAccount();
-            WelcomePage welcome = new();
-            _ = ContentProvider.Navigate(welcome.GetType());
 
             AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/CodeStudioCanary.ico"));
             m_AppWindow = GetAppWindowForCurrentWindow();
@@ -42,7 +44,7 @@ namespace WindowsCode.Studio
             {
                 AppWindowTitleBar titleBar = m_AppWindow.TitleBar;
                 titleBar.ExtendsContentIntoTitleBar = true;
-                titleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
+                titleBar.PreferredHeightOption = TitleBarHeightOption.Standard;
                 titleBar.ButtonBackgroundColor = Colors.Transparent;
                 titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
 
@@ -52,10 +54,9 @@ namespace WindowsCode.Studio
             else
             {
                 AppTitleBar.Visibility = Visibility.Collapsed;
-                // Show alternative UI for any functionality in
-                // the title bar, such as search.
             }
             Title = Windows.ApplicationModel.Package.Current.DisplayName;
+            App.SetContentProvider(ContentProvider);
         }
 
         private void CheckWindowsVersion()
@@ -233,59 +234,72 @@ namespace WindowsCode.Studio
 
         private async void AboutItem_Click(object sender, RoutedEventArgs e)
         {
-            ContentDialog aboutDialog = new()
-            {
-                Title = "About",
-                Content = "Product Name: " + Windows.ApplicationModel.Package.Current.DisplayName
-                        + "\nVersion: " + Windows.ApplicationModel.Package.Current.Id.Version.Major
-                        + "." + Windows.ApplicationModel.Package.Current.Id.Version.Minor
-                        + "." + Windows.ApplicationModel.Package.Current.Id.Version.Build
-                        + "." + Windows.ApplicationModel.Package.Current.Id.Version.Revision
-                        + "\nPublisher: " + Windows.ApplicationModel.Package.Current.PublisherDisplayName
-                        + "\nLicense: Mozilla Public License Version 2.0",
-                PrimaryButtonText = "See License Information",
-                CloseButtonText = "Close",
-                DefaultButton = ContentDialogButton.Close,
-                XamlRoot = Content.XamlRoot
-            };
-            ContentDialogResult dialogResult = await aboutDialog.ShowAsync();
-            if (dialogResult == ContentDialogResult.Primary)
-            {
-                string url = "https://raw.githubusercontent.com/rencerace/WCS/canary/LICENSE";
-                string browser = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
-                _ = Process.Start(new ProcessStartInfo(browser, url));
-            }
+            await new AboutDialog() { XamlRoot = Content.XamlRoot }.ShowAsync();
+            //ContentDialog aboutDialog = new()
+            //{
+            //    Title = "About",
+            //    Content = "Product Name: " + Windows.ApplicationModel.Package.Current.DisplayName
+            //            + "\nVersion: " + Windows.ApplicationModel.Package.Current.Id.Version.Major
+            //            + "." + Windows.ApplicationModel.Package.Current.Id.Version.Minor
+            //            + "." + Windows.ApplicationModel.Package.Current.Id.Version.Build
+            //            + "." + Windows.ApplicationModel.Package.Current.Id.Version.Revision
+            //            + "\nPublisher: " + Windows.ApplicationModel.Package.Current.PublisherDisplayName
+            //            + "\nLicense: Mozilla Public License Version 2.0",
+            //    PrimaryButtonText = "See License Information",
+            //    CloseButtonText = "Close",
+            //    DefaultButton = ContentDialogButton.Close,
+            //    XamlRoot = Content.XamlRoot
+            //};
+            //ContentDialogResult dialogResult = await aboutDialog.ShowAsync();
+            //if (dialogResult == ContentDialogResult.Primary)
+            //{
+            //    string url = "https://raw.githubusercontent.com/rencerace/WCS/canary/LICENSE";
+            //    string browser = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
+            //    _ = Process.Start(new ProcessStartInfo(browser, url));
+            //}
         }
 
         private void ShowWelcomePage_Click(object sender, RoutedEventArgs e)
         {
-            ContentProvider.Navigate(typeof(WelcomePage));
+            if (App.GetEditorPage() != null)
+            {
+                TabService tabService = new(App.GetEditorPage().FileTabView);
+
+                tabService.CreateTabItem("Welcome", new WelcomePage());
+                tabService.GetTabView().SelectedIndex += 1;
+            }
+            else
+            {
+                ContentProvider.Navigate(typeof(WelcomePage));
+            }
         }
 
         private async void NewFile_Click(object sender, RoutedEventArgs e)
         {
-            New_File newFileDialog = new()
-            {
-                XamlRoot = Content.XamlRoot
-            };
+            New_File newFileDialog = new() { XamlRoot = Content.XamlRoot };
 
             ContentDialogResult dialogResult = await newFileDialog.ShowAsync();
 
-            if (dialogResult == ContentDialogResult.Primary && !string.IsNullOrEmpty(newFileDialog._fileName))
+            if (dialogResult == ContentDialogResult.Primary && !string.IsNullOrEmpty(newFileDialog.GetFileName()))
             {
-
-            }
-            else
-            {
-                ContentDialog errorDialog = new()
+                if (App.GetEditorPage() != null)
                 {
-                    Title = "Error",
-                    Content = "Invalid File Name",
-                    CloseButtonText = "OK",
-                    DefaultButton = ContentDialogButton.Close
-                };
-                errorDialog.XamlRoot = Content.XamlRoot;
-                await errorDialog.ShowAsync();
+                    TabService tabService = new(App.GetEditorPage().FileTabView);
+
+                    tabService.CreateTabItem($"{newFileDialog.GetFileName()}", new EditBoxTabView());
+                    tabService.GetTabView().SelectedIndex += 1;
+                }
+            }
+        }
+
+        private void AppOptionButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (App.GetEditorPage() != null)
+            {
+                TabService tabService = new(App.GetEditorPage().FileTabView);
+
+                tabService.CreateTabItem("Settings", new SettingsPage());
+                tabService.GetTabView().SelectedIndex += 1;
             }
         }
     }

@@ -3,6 +3,7 @@
 
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Windows.System;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -19,17 +20,34 @@ namespace WindowsCode.Studio.Views.TabViews
             InitializeComponent();
         }
 
-        private void CodeEditor_KeyDown(object sender, KeyRoutedEventArgs e)
+        private void CodeEditor_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (e.Key is Windows.System.VirtualKey.Tab)
+            //CoreVirtualKeyStates shiftState = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift);
+            // Check if the tab key is pressed
+            if (e.Key == VirtualKey.Tab)
             {
-                RichEditBox richEditBox = sender as RichEditBox;
-                if (richEditBox != null)
-                {
-                    richEditBox.Document.Selection.TypeText("\t");
-                    e.Handled = true;
-                }
+                // Check if the shift key is pressed
+                //if (shiftState.HasFlag(CoreVirtualKeyStates.Down))
+                //{
+                // Delete four spaces
+                //    CodeEditor.Document.Selection.Delete(Microsoft.UI.Text.TextRangeUnit.Character, 4);
+                //}
+                //else
+                //{
+                // Insert four spaces
+                CodeEditor.Document.Selection.TypeText("    ");
+                //}
+                // Mark the event as handled
+                e.Handled = true;
             }
+            // Check if the backspace or delete key is pressed
+            //else if (e.Key == VirtualKey.Back || e.Key == VirtualKey.Delete)
+            //{
+            //    // Delete the selected text
+            //    CodeEditor.Document.Selection.Delete(Microsoft.UI.Text.TextRangeUnit.CharacterFormat, 0);
+            //    // Mark the event as handled
+            //    e.Handled = true;
+            //}
         }
     }
 }

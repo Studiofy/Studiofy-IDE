@@ -26,6 +26,6 @@
                      FontFamily="Cascadia Mono"
                      FontSize="14.5"
                      Style="{StaticResource RichEditBoxCustomStyle}"
-                     KeyDown="CodeEditor_KeyDown"/>
+                     PreviewKeyDown="CodeEditor_PreviewKeyDown"/>
     </Grid>
 </Page>

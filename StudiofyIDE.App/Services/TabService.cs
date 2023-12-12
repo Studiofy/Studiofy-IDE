@@ -1,14 +1,14 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
-namespace WindowsCode.Studio.Models
+namespace WindowsCode.Studio.Services
 {
-    public class EditorTabViewModel
+    public class TabService
     {
         private TabView _tabView { get; set; }
 
         private TabViewItem _tabItem { get; set; }
 
-        public EditorTabViewModel(TabView tabView)
+        public TabService(TabView tabView)
         {
             _tabView = tabView;
         }

@@ -1,19 +1,28 @@
 ﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.WindowsAppRuntime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
+using WindowsCode.Studio.Views;
 using WinUIEx;
 
 namespace WindowsCode.Studio
 {
     public partial class App : Application
     {
+        private static EditorPage _parentEditor;
+
+        private static MainWindow _mainWindow;
+
+        private static Frame _contentFrame;
+
         public App()
         {
             InitializeComponent();
@@ -22,7 +31,6 @@ namespace WindowsCode.Studio
             int result = GetCurrentPackageFullName(ref length, sb);
             if (result == 15700L)
             {
-                // Not a packaged app. Configure file-based persistence instead
                 WindowManager.PersistenceStorage = new FilePersistence("WinUIExPersistence.json");
             }
         }
@@ -38,18 +46,18 @@ namespace WindowsCode.Studio
                 _ = DeploymentManager.Initialize();
             }
 
-            //if (Debugger.IsAttached)
-            //{
-            //    m_Window = new MainWindow();
-            //    m_Window.Show();
-            //}
-            //else
-            //{
-            SplashScreen s_Window = new(typeof(MainWindow));
-            s_Window.CenterOnScreen();
-            _ = s_Window.Show();
-            s_Window.Completed += Window_Completed;
-            //}
+            if (Debugger.IsAttached)
+            {
+                m_Window = new MainWindow();
+                m_Window.Show();
+            }
+            else
+            {
+                SplashScreen s_Window = new(typeof(MainWindow));
+                s_Window.CenterOnScreen();
+                _ = s_Window.Show();
+                s_Window.Completed += Window_Completed;
+            }
         }
 
         private void Window_Completed(object sender, Window e)
@@ -59,6 +67,36 @@ namespace WindowsCode.Studio
         }
 
         private Window m_Window;
+
+        public static MainWindow GetMainWindow()
+        {
+            return _mainWindow;
+        }
+
+        public static void SetMainWindow(MainWindow mainWindow)
+        {
+            _mainWindow = mainWindow;
+        }
+
+        public static Frame GetContentProvider()
+        {
+            return _contentFrame;
+        }
+
+        public static void SetContentProvider(Frame contentFrame)
+        {
+            _contentFrame = contentFrame;
+        }
+
+        public static EditorPage GetEditorPage()
+        {
+            return _parentEditor ?? null;
+        }
+
+        public static void SetEditorPage(EditorPage editorPage)
+        {
+            _parentEditor = editorPage;
+        }
     }
 
     internal class FilePersistence : IDictionary<string, object>

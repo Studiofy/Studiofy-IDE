@@ -3,9 +3,10 @@
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using WindowsCode.Studio.Services;
 using WindowsCode.Studio.Views.Dialogs;
+using WindowsCode.Studio.Views.TabViews;
 
 namespace WindowsCode.Studio.Views
 {
@@ -23,37 +24,34 @@ namespace WindowsCode.Studio.Views
 
         private void OpenEditorButton_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow currentWindow = MainWindow.activeWindow;
-            ContinuumNavigationTransitionInfo transitionInfo = new();
-            _ = currentWindow.ContentProvider.Navigate(typeof(EditorPage), null, transitionInfo);
+            if (App.GetEditorPage() != null)
+            {
+                EditorPage editorPage = App.GetEditorPage();
+                App.GetMainWindow().ContentProvider.Navigate(editorPage.GetType());
+            }
+            else
+            {
+                App.SetEditorPage(new EditorPage());
+                OpenEditorButton_Click(sender, e);
+            }
         }
 
         private async void NewFileButton_Click(object sender, RoutedEventArgs e)
         {
-            New_File newFileDialog = new()
-            {
-                XamlRoot = Content.XamlRoot
-            };
+            New_File newFileDialog = new() { XamlRoot = Content.XamlRoot };
 
             ContentDialogResult dialogResult = await newFileDialog.ShowAsync();
 
-            if (dialogResult == ContentDialogResult.Primary && !string.IsNullOrEmpty(newFileDialog._fileName))
+            if (dialogResult == ContentDialogResult.Primary && !string.IsNullOrEmpty(newFileDialog.GetFileName()))
             {
-
-            }
-            else
-            {
-                ContentDialog errorDialog = new()
+                if (App.GetEditorPage() != null)
                 {
-                    Title = "Error",
-                    Content = "Invalid File Name",
-                    CloseButtonText = "OK",
-                    DefaultButton = ContentDialogButton.Close
-                };
-                errorDialog.XamlRoot = Content.XamlRoot;
-                await errorDialog.ShowAsync();
-            }
+                    TabService tabService = new(App.GetEditorPage().FileTabView);
 
+                    tabService.CreateTabItem($"{newFileDialog.GetFileName()}", new EditBoxTabView());
+                    tabService.GetTabView().SelectedIndex += 1;
+                }
+            }
         }
     }
 }
