@@ -52,6 +52,8 @@ namespace WindowsCode.Studio.Views
 
             FileService = new();
             TabService = new(FileTabView);
+
+            TabService.CreateTabItem("Welcome", new WelcomePage());
         }
 
         private async void NewFileButton_Click(object sender, RoutedEventArgs e)
@@ -508,8 +510,8 @@ namespace WindowsCode.Studio.Views
                                         {
                                             ContentDialog errorDialog = new()
                                             {
-                                                Title = $"{ex.Source} throws an Exception",
-                                                Content = ex.Message.Split('\n')[0],
+                                                Title = $"Error",
+                                                Content = $"Cannot open {File.Name}\nIt may be corrupted or the file type is not supported.",
                                                 CloseButtonText = "OK",
                                                 DefaultButton = ContentDialogButton.Close
                                             };
@@ -524,7 +526,7 @@ namespace WindowsCode.Studio.Views
                         {
                             ContentDialog errorDialog = new()
                             {
-                                Title = $"Error on Reading File",
+                                Title = $"{ex.Source}",
                                 Content = ex.Message.Split('\n')[0],
                                 CloseButtonText = "OK",
                                 DefaultButton = ContentDialogButton.Close
@@ -728,6 +730,23 @@ namespace WindowsCode.Studio.Views
                     PreviewSplitView.IsPaneOpen = false;
                     PreviewFileButton.IsChecked = false;
                 }
+            }
+        }
+
+        private void RunProjectButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ToggleSplitPaneButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!EditorSplitView.IsPaneOpen)
+            {
+                EditorSplitView.IsPaneOpen = !EditorSplitView.IsPaneOpen;
+            }
+            else
+            {
+                EditorSplitView.IsPaneOpen = !EditorSplitView.IsPaneOpen;
             }
         }
     }

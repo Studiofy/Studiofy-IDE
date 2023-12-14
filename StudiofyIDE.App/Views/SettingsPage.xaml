@@ -13,16 +13,23 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <ListView x:Name="SettingsNavigation" 
-                  Grid.Column="0">
+                  Grid.Column="0"
+                  SelectionChanged="SettingsNavigation_SelectionChanged">
             <ListView.Items>
-                <ListViewItem Content="General"/>
-                <ListViewItem Content="Editor"/>
-                <ListViewItem Content="Terminal"/>
-                <ListViewItem Content="Command Bar"/>
-                <ListViewItem Content="About"/>
+                <ListViewItem x:Name="GeneralSettingsItem"
+                              Content="General"/>
+                <ListViewItem x:Name="EditorSettingsItem"
+                              Content="Editor"/>
+                <ListViewItem x:Name="TerminalSettingsItem"
+                              Content="Terminal"/>
+                <ListViewItem x:Name="CommandBarSettingsItem"
+                              Content="Command Bar"/>
+                <ListViewItem x:Name="AboutSettingsItem"
+                              Content="About"/>
             </ListView.Items>
         </ListView>
-        <Frame Grid.Column="1"
+        <Frame x:Name="SectionFrame"
+               Grid.Column="1"
                BorderBrush="Gray"
                BorderThickness="1,0,0,0"
                Margin="15,0,0,0"/>

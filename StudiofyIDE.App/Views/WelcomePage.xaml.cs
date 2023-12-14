@@ -53,5 +53,25 @@ namespace WindowsCode.Studio.Views
                 }
             }
         }
+
+        private void OpenFileButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private async void CloneRepositoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            CloneRepositoryDialog cloneRepo = new() { XamlRoot = Content.XamlRoot };
+            ContentDialogResult cloneDialogResult = await cloneRepo.ShowAsync();
+            if (cloneDialogResult == ContentDialogResult.Primary)
+            {
+
+            }
+        }
     }
 }

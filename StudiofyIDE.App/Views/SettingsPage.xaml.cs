@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml.Controls;
+using WindowsCode.Studio.Views.SettingsViews;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -14,6 +15,19 @@ namespace WindowsCode.Studio.Views.Dialogs
         {
             InitializeComponent();
             SettingsNavigation.SelectedItem = SettingsNavigation.Items[0];
+        }
+
+        private void SettingsNavigation_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListView settingsNavigation = sender as ListView;
+            if ((settingsNavigation.SelectedItem as ListViewItem) == GeneralSettingsItem)
+            {
+                SectionFrame.Navigate(typeof(GeneralSettingsPage));
+            }
+            else if ((settingsNavigation.SelectedItem as ListViewItem) == EditorSettingsItem)
+            {
+                SectionFrame.Navigate(typeof(EditorSettingsPage));
+            }
         }
     }
 }

@@ -31,8 +31,8 @@ namespace WindowsCode.Studio
             PersistenceId = "MainWindow";
 
             App.SetMainWindow(this);
-            WelcomePage welcome = new();
-            ContentProvider.Navigate(welcome.GetType());
+            EditorPage editor = new();
+            ContentProvider.Navigate(editor.GetType());
 
             CheckWindowsVersion();
             GetCurrentUserAccount();
@@ -44,7 +44,7 @@ namespace WindowsCode.Studio
             {
                 AppWindowTitleBar titleBar = m_AppWindow.TitleBar;
                 titleBar.ExtendsContentIntoTitleBar = true;
-                titleBar.PreferredHeightOption = TitleBarHeightOption.Standard;
+                titleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
                 titleBar.ButtonBackgroundColor = Colors.Transparent;
                 titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
 

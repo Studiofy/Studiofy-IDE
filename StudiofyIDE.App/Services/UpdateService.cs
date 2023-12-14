@@ -13,6 +13,7 @@ namespace WindowsCode.Studio.Services
 {
     public class UpdateService
     {
+
         public enum Version
         {
             Canary,
@@ -22,28 +23,83 @@ namespace WindowsCode.Studio.Services
 
         public async Task GetUpdates(UIElement content)
         {
+            Grid mainGrid = new()
+            {
+                Height = 100,
+                Width = 400
+            };
+
+            // Create StackPanel
+            StackPanel stackPanel = new()
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+
+            // Create ProgressRing
+            ProgressRing progressRing = new()
+            {
+                Margin = new Thickness(10, 0, 10, 0),
+                IsIndeterminate = true,
+                IsActive = true
+            };
+
+            // Create TextBlock
+            TextBlock statusTextBlock = new()
+            {
+                Name = "Status",
+                Text = "Searching Studiofy IDE Releases",
+                VerticalAlignment = VerticalAlignment.Center,
+                TextAlignment = TextAlignment.Center,
+                HorizontalTextAlignment = TextAlignment.Center
+            };
+
+            stackPanel.Children.Add(progressRing);
+            stackPanel.Children.Add(statusTextBlock);
+
+            mainGrid.Children.Add(stackPanel);
+
+            // Add StackPanel to the content of the page
+            ContentDialog checkUpdateDialog = new()
+            {
+                Title = "Checking for Updates...",
+                Content = mainGrid,
+                XamlRoot = content.XamlRoot
+            };
+
             GitHubClient GitClient = new(new ProductHeaderValue("Studiofy-IDE"));
+
             string Current = Windows.ApplicationModel.Package.Current.Id.Version.Major.ToString() + "."
                         + Windows.ApplicationModel.Package.Current.Id.Version.Minor.ToString() + "."
                         + Windows.ApplicationModel.Package.Current.Id.Version.Build.ToString() + "."
                         + Windows.ApplicationModel.Package.Current.Id.Version.Revision.ToString() + "-Canary";
+
             try
             {
+                _ = checkUpdateDialog.ShowAsync();
+
                 IReadOnlyList<Release> Release = await GitClient.Repository.Release.GetAll("Studiofy", "Studiofy-IDE");
+
                 Release Latest = Release[0];
+
+                await Task.Delay(2500);
+
                 if (!Latest.TagName.EndsWith("v" + Current))
                 {
-                    ContentDialog updateDialog = new()
+                    checkUpdateDialog.Hide();
+
+                    checkUpdateDialog = new()
                     {
-                        Title = "Update Available!",
-                        Content = $"{Latest.Name.Replace("-Canary", " for Canary Channel")} is Available.\nWould you like to Update now?",
+                        Title = "New Version Available!",
+                        Content = $"{Latest.Name.Replace("-Canary", " for Canary Channel")} is Available. Would you like to Update now?\n\nNote: Application will shutdown when installing the update",
                         PrimaryButtonText = "Yes, Update Now",
                         SecondaryButtonText = "No, Maybe Later",
                         DefaultButton = ContentDialogButton.Primary,
                         XamlRoot = content.XamlRoot
                     };
 
-                    ContentDialogResult dialogResult = await updateDialog.ShowAsync();
+                    ContentDialogResult dialogResult = await checkUpdateDialog.ShowAsync();
 
                     if (dialogResult == ContentDialogResult.Primary)
                     {
@@ -119,23 +175,84 @@ namespace WindowsCode.Studio.Services
                                 streamContent.CopyTo(fileStream);
                             }
 
-                            ContentDialog userDialog = new()
-                            {
-                                Title = "Warning",
-                                Content = "This application is required to shutdown when installing an update.\nWould you like to proceed?",
-                                PrimaryButtonText = "OK",
-                                DefaultButton = ContentDialogButton.Primary,
-                                XamlRoot = content.XamlRoot
-                            };
-
-                            ContentDialogResult userDialogResult = await userDialog.ShowAsync();
-
-                            if (userDialogResult == ContentDialogResult.Primary)
+                            try
                             {
                                 PackageManager packman = new();
-                                DeploymentResult depRes = await packman.AddPackageAsync(new Uri(filePath), null, DeploymentOptions.ForceApplicationShutdown);
+
+                                DeploymentResult depRes = await packman.AddPackageAsync(new Uri(filePath), null, DeploymentOptions.ForceTargetApplicationShutdown);
+
                                 DeploymentResult curPack = await packman.RemovePackageAsync(Windows.ApplicationModel.Package.Current.Id.FullName);
+
+                                if (string.IsNullOrEmpty(depRes.ErrorText))
+                                {
+                                    await Windows.ApplicationModel.Core.CoreApplication.RequestRestartAsync(string.Empty);
+                                }
+                                else
+                                {
+                                    ContentDialog errorDialog = new()
+                                    {
+                                        Title = "Error on Installing Update",
+                                        Content = depRes.ErrorText,
+                                        CloseButtonText = "OK",
+                                        DefaultButton = ContentDialogButton.Close,
+                                        XamlRoot = content.XamlRoot
+                                    };
+
+                                    await errorDialog.ShowAsync();
+                                }
                             }
+                            catch (Exception ex)
+                            {
+                                ContentDialog errorDialog = new()
+                                {
+                                    Title = "Error on Installing Update",
+                                    Content = $"{ex.Message}\n\nIf you want to manually install the update yourself, find this path:\n{filePath}",
+                                    CloseButtonText = "OK",
+                                    DefaultButton = ContentDialogButton.Close,
+                                    XamlRoot = content.XamlRoot
+                                };
+
+                                await errorDialog.ShowAsync();
+                            }
+
+                            //try
+                            //{
+                            //    PackageManager packman = new();
+
+                            //    // Uninstall the current unpackaged version
+                            //    DeploymentResult curPack = await packman.RemovePackageAsync(Windows.ApplicationModel.Package.Current.Id.FullName);
+
+                            //    if (!string.IsNullOrEmpty(curPack.ErrorText))
+                            //    {
+                            //        ContentDialog errorDialog = new()
+                            //        {
+                            //            Title = "Error on Uninstalling Previous Version",
+                            //            Content = curPack.ErrorText,
+                            //            CloseButtonText = "OK",
+                            //            DefaultButton = ContentDialogButton.Close,
+                            //            XamlRoot = content.XamlRoot
+                            //        };
+
+                            //        await errorDialog.ShowAsync();
+                            //        return; // Stop further processing if uninstallation fails
+                            //    }
+
+                            //    // Install the new packaged version using a separate process
+                            //    await InstallNewVersionAsync(content, filePath);
+                            //}
+                            //catch (Exception ex)
+                            //{
+                            //    ContentDialog errorDialog = new()
+                            //    {
+                            //        Title = "Error on Update",
+                            //        Content = ex.Message,
+                            //        CloseButtonText = "OK",
+                            //        DefaultButton = ContentDialogButton.Close,
+                            //        XamlRoot = content.XamlRoot
+                            //    };
+
+                            //    await errorDialog.ShowAsync();
+                            //}
                         }
                     }
                 }
@@ -159,7 +276,7 @@ namespace WindowsCode.Studio.Services
                     ContentDialog exceptionDialog = new()
                     {
                         Title = "Error",
-                        Content = ex.Message /*"Cannot find new updates for Studiofy IDE Canary Channel"*/,
+                        Content = ex.Message,
                         SecondaryButtonText = "Help",
                         CloseButtonText = "OK",
                         DefaultButton = ContentDialogButton.Close,
@@ -167,6 +284,51 @@ namespace WindowsCode.Studio.Services
                     };
                     _ = await exceptionDialog.ShowAsync();
                 }
+            }
+        }
+
+        private async Task InstallNewVersionAsync(UIElement element, string filePath)
+        {
+            try
+            {
+                // Use a new process for the installation
+                PackageManager packman = new();
+
+                // Use MSIX installation for the new version
+                DeploymentResult depRes = await packman.AddPackageByUriAsync(new Uri(filePath), new AddPackageOptions { ForceAppShutdown = true });
+
+                if (string.IsNullOrEmpty(depRes.ErrorText))
+                {
+                    // Restart the application after successful installation
+                    await Windows.ApplicationModel.Core.CoreApplication.RequestRestartAsync(string.Empty);
+                }
+
+                else
+                {
+                    ContentDialog errorDialog = new()
+                    {
+                        Title = "Error on Installing Update",
+                        Content = depRes.ErrorText,
+                        CloseButtonText = "OK",
+                        DefaultButton = ContentDialogButton.Close,
+                        XamlRoot = element.XamlRoot
+                    };
+
+                    await errorDialog.ShowAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                ContentDialog errorDialog = new()
+                {
+                    Title = "Error on Installing Update",
+                    Content = ex.Message,
+                    CloseButtonText = "OK",
+                    DefaultButton = ContentDialogButton.Close,
+                    XamlRoot = element.XamlRoot
+                };
+
+                await errorDialog.ShowAsync();
             }
         }
     }

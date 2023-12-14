@@ -17,84 +17,114 @@
         </Grid.RowDefinitions>
         <CommandBar x:Name="AppCommandBar"
                     Grid.Row="0"
-                    DefaultLabelPosition="Collapsed"
-                    HorizontalAlignment="Stretch"
+                    DefaultLabelPosition="Right"
+                    HorizontalAlignment="Left"
                     IsDynamicOverflowEnabled="False"
                     OverflowButtonVisibility="Collapsed">
+            <AppBarToggleButton x:Name="ToggleSplitPaneButton"
+                                ToolTipService.ToolTip="Expand/Collapse Pane"
+                                Click="ToggleSplitPaneButton_Click"
+                                Width="44"
+                                Label="Expand/Collapse Pane"
+                                LabelPosition="Collapsed">
+                <AppBarToggleButton.Icon>
+                    <FontIcon Glyph="&#xE89F;"/>
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <AppBarSeparator/>
             <AppBarButton x:Name="NewFileButton"
                           Label="New"
+                          LabelPosition="Collapsed"
                           AccessKey="N"
                           ToolTipService.ToolTip="New File"
                           Click="NewFileButton_Click"
-                          Width="45">
+                          Width="44">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xED0E;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton x:Name="OpenFileButton"
                           Label="Open File"
+                          LabelPosition="Collapsed"
                           AccessKey="O"
                           ToolTipService.ToolTip="Open File"
                           Click="OpenFileButton_Click"
-                          Width="45">
+                          Width="44">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE8E5;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton x:Name="OpenFolderButton"
                           Label="Open Folder"
+                          LabelPosition="Collapsed"
                           AccessKey="F"
                           ToolTipService.ToolTip="Open Folder"
                           Click="OpenFolderButton_Click"
-                          Width="45">
+                          Width="44">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE838;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton x:Name="SaveFileButton"
-                        Label="Save" IsEnabled="False"
+                          Label="Save"
+                          LabelPosition="Collapsed"
+                          IsEnabled="False"
                           AccessKey="S"
-                        ToolTipService.ToolTip="Save"
-                        Click="SaveFileButton_Click"
-                          Width="45">
+                          ToolTipService.ToolTip="Save"
+                          Click="SaveFileButton_Click"
+                          Width="44">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE74E;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarSeparator/>
             <AppBarButton x:Name="RenameFileButton"
-                        Label="Rename" IsEnabled="False"
-                        ToolTipService.ToolTip="Rename"
-                          Width="45">
+                          Label="Rename" 
+                          LabelPosition="Collapsed"
+                          IsEnabled="False"
+                          ToolTipService.ToolTip="Rename"
+                          Width="44">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE8AC;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton x:Name="DeleteFileButton" 
-                          Label="Delete" IsEnabled="False"
-                        ToolTipService.ToolTip="Delete"
-                          Width="45">
+                          Label="Delete"
+                          LabelPosition="Collapsed"
+                          IsEnabled="False"
+                          ToolTipService.ToolTip="Delete"
+                          Width="44">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE74D;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarToggleButton x:Name="PreviewFileButton"
                                 Label="Preview File"
+                                LabelPosition="Collapsed"
                                 ToolTipService.ToolTip="Preview File"
-                                Width="45" HorizontalAlignment="Right"
+                                Width="44" HorizontalAlignment="Right"
                                 Click="PreviewFileButton_Click">
                 <AppBarToggleButton.Icon>
                     <FontIcon Glyph="&#xE8ff;"/>
                 </AppBarToggleButton.Icon>
             </AppBarToggleButton>
+            <AppBarButton x:Name="RunProjectButton"
+                                Label="Run Current Project"
+                                ToolTipService.ToolTip="Run Current Project"
+                                HorizontalAlignment="Right"
+                                Click="RunProjectButton_Click">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE768;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
         </CommandBar>
         <NavigationView Grid.Row="1" 
                         x:Name="EditorNavigationView"
-                        IsPaneToggleButtonVisible="False"
                         IsBackButtonVisible="Collapsed"
                         IsSettingsVisible="False"
                         PaneDisplayMode="LeftCompact"
-                        OpenPaneLength="200">
+                        OpenPaneLength="250"
+                        Margin="2,0">
             <NavigationView.MenuItems>
                 <NavigationViewItem Content="Explorer">
                     <NavigationViewItem.Icon>
@@ -109,15 +139,26 @@
             </NavigationView.MenuItems>
             <NavigationView.Content>
                 <SplitView x:Name="EditorSplitView"
-                           IsPaneOpen="True"
-                           OpenPaneLength="300"
+                           OpenPaneLength="250"
+                           CompactPaneLength="50"
                            DisplayMode="Inline"
                            Background="Transparent"> 
                     <SplitView.Pane>
-                        <TreeView x:Name="FileTreeView"
-                                  SelectionMode="Single"
-                                  SelectionChanged="FileTreeView_SelectionChanged"
-                                  Margin="0,2,0,0"/>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <AutoSuggestBox x:Name="TreeViewFileSearcher" 
+                                            Grid.Row="0" 
+                                            Margin="5"
+                                            QueryIcon="Find"
+                                            PlaceholderText="Search Files"/>
+                            <TreeView x:Name="FileTreeView"
+                                      Grid.Row="1"
+                                      SelectionMode="Single"
+                                      SelectionChanged="FileTreeView_SelectionChanged"/>
+                        </Grid>
                     </SplitView.Pane>
                     <SplitView.Content>
                         <SplitView x:Name="PreviewSplitView"
