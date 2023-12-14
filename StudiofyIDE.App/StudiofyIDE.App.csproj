@@ -22,7 +22,7 @@
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <PackageCertificateKeyFile>StudiofyIDE.App_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AssemblyName>StudiofyIDE</AssemblyName>
-    <Version>1.0.1026</Version>
+    <Version>1.0.1027</Version>
     <Copyright>Copyright © 2023 Studiofy. All Rights Reserved.</Copyright>
     <NeutralLanguage>en-PH</NeutralLanguage>
     <ApplicationIcon>Assets\CodeStudioCanary.ico</ApplicationIcon>
@@ -43,8 +43,12 @@
     <None Remove="Views\Dialogs\AboutDialog.xaml" />
     <None Remove="Views\Dialogs\New File.xaml" />
     <None Remove="Views\Dialogs\SettingsPage.xaml" />
+    <None Remove="Views\Dialogs\UpdateDialog.xaml" />
     <None Remove="Views\EditorPage.xaml" />
     <None Remove="Views\MainPage.xaml" />
+    <None Remove="Views\SettingsViews\CommandBarSettingsPage.xaml" />
+    <None Remove="Views\SettingsViews\EditorSettingsPage.xaml" />
+    <None Remove="Views\SettingsViews\GeneralSettingsPage.xaml" />
     <None Remove="Views\TabViews\EditBoxTabView.xaml" />
     <None Remove="Views\WelcomePage.xaml" />
   </ItemGroup>
@@ -122,7 +126,19 @@
     <PRIResource Remove="CustomControl\**" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\StudiofyIDE.Core\StudiofyIDE.Core.csproj" />
+    <Page Update="Views\Dialogs\UpdateDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\SettingsViews\CommandBarSettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\SettingsViews\EditorSettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\Dialogs\AboutDialog.xaml">
@@ -151,6 +167,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\Dialogs\New File.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\SettingsViews\GeneralSettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
