@@ -49,6 +49,7 @@
     <None Remove="Views\SettingsViews\EditorSettingsPage.xaml" />
     <None Remove="Views\SettingsViews\GeneralSettingsPage.xaml" />
     <None Remove="Views\TabViews\EditBoxTabView.xaml" />
+    <None Remove="Views\TabViews\TextEditorTabView.xaml" />
     <None Remove="Views\WelcomePage.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +124,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PRIResource Remove="CustomControl\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Studiofy.TextEditor\Studiofy.TextEditor.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\TabViews\TextEditorTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\SettingsViews\CommandBarSettingsPage.xaml">

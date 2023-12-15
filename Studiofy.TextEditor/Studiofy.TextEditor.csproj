@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>Studiofy.TextEditor</RootNamespace>
+    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <UseWinUI>true</UseWinUI>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+	<UseRIDGraph>true</UseRIDGraph>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="TextEditor.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.1.1" />
+      <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" />
+      <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="TextEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+    <Folder Include="EditorExtensions\" />
+  </ItemGroup>
+</Project>

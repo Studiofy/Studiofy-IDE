@@ -286,7 +286,7 @@ namespace WindowsCode.Studio
                 {
                     TabService tabService = new(App.GetEditorPage().FileTabView);
 
-                    tabService.CreateTabItem($"{newFileDialog.GetFileName()}", new EditBoxTabView());
+                    tabService.CreateTabItem($"{newFileDialog.GetFileName()}", new TextEditorTabView());
                     tabService.GetTabView().SelectedIndex += 1;
                 }
             }
