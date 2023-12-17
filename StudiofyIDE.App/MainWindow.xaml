@@ -346,7 +346,6 @@
             </MenuBar>
             <InfoBar x:Name="AppInfoReporter"
                      Grid.Row="1"
-                     IsOpen="True"
                      IsClosable="False"
                      Title="Confidential"
                      Severity="Error"

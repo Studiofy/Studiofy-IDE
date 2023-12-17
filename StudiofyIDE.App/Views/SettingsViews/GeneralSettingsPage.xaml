@@ -6,7 +6,8 @@
     xmlns:local="using:WindowsCode.Studio.Views.SettingsViews"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" FontFamily="Segoe UI Variable Display">
+    mc:Ignorable="d" FontFamily="Segoe UI Variable Display"
+    Loaded="Page_Loaded">
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -35,16 +36,16 @@
                     HorizontalContentAlignment="Stretch"
                     Style="{StaticResource ExpanderLikeButtonCustomStyle}">
                 <Button.Content>
-                    <Grid
-                    CornerRadius="6">
+                    <Grid CornerRadius="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="60"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Enable Confidential InfoBar Message"
+                        <TextBlock x:Name="txtInfoBarSetting" Grid.Column="0" Text="Enable Confidential InfoBar Message"
                            Margin="16,0"
                            VerticalAlignment="Center"/>
-                        <ToggleSwitch Grid.Column="1" OffContent="" OnContent=""/>
+                        <ToggleSwitch x:Name="ConfidentialInfoBarMessageToggleSwitch" Grid.Column="1" OffContent="" OnContent=""
+                                      Toggled="ConfidentialInfoBarMessageToggleSwitch_Toggled"/>
                     </Grid>
                 </Button.Content>
             </Button>
@@ -59,8 +60,7 @@
                     HorizontalContentAlignment="Stretch"
                     Style="{StaticResource ExpanderLikeButtonCustomStyle}">
                 <Button.Content>
-                    <Grid
-                    CornerRadius="6">
+                    <Grid CornerRadius="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="210"/>
@@ -68,11 +68,48 @@
                         <TextBlock Grid.Column="0" Text="Appearance"
                            Margin="16,0"
                            VerticalAlignment="Center"/>
-                        <ComboBox SelectedIndex="0" Grid.Column="1" HorizontalAlignment="Right" Margin="20,0" Width="160">
+                        <ComboBox x:Name="ThemeSelector" 
+                                  SelectedIndex="0" 
+                                  Grid.Column="1"
+                                  HorizontalAlignment="Right" 
+                                  Margin="20,0" 
+                                  Width="160"
+                                  SelectionChanged="ThemeSelector_SelectionChanged">
                             <ComboBoxItem Content="Windows Default"/>
-                            <ComboBoxItem Content="Dark"/>
-                            <ComboBoxItem Content="Light"/>
+                            <ComboBoxItem Content="Light" IsEnabled="false"/>
+                            <ComboBoxItem Content="Dark" IsEnabled="false"/>
                         </ComboBox>
+                    </Grid>
+                </Button.Content>
+            </Button>
+            <Button HorizontalAlignment="Stretch"
+                    Margin="0,0,0,10"
+                    Height="72"
+                    BorderBrush="#212121"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Padding="0,10"
+                    IsEnabled="True"
+                    HorizontalContentAlignment="Stretch"
+                    Style="{StaticResource ExpanderLikeButtonCustomStyle}">    
+                <Button.Content>
+                    <Grid CornerRadius="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="210"/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox x:Name="ShowWelcomePageCheckBox" 
+                                  Grid.Column="0"
+                                  Margin="16,0"
+                                  VerticalAlignment="Center"
+                                  Checked="ShowWelcomePageCheckBox_Checked"
+                                  Unchecked="ShowWelcomePageCheckBox_Unchecked">
+                            <CheckBox.Content>
+                                <TextBlock Text="Show Welcome Page on Startup"
+                                           VerticalAlignment="Center"
+                                           Margin="0,1,0,0"/>
+                            </CheckBox.Content>
+                        </CheckBox>
                     </Grid>
                 </Button.Content>
             </Button>

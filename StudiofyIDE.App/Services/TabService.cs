@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Controls;
+using System.Threading.Tasks;
 
 namespace WindowsCode.Studio.Services
 {
@@ -47,6 +48,22 @@ namespace WindowsCode.Studio.Services
                 };
                 _tabView.TabItems.Add(_tabItem);
                 return _tabItem;
+            }
+            return null;
+        }
+
+        public Task<TabViewItem> CreateTabItemAsync(string tabHeader, object content, IconSource icon)
+        {
+            if (_tabView != null)
+            {
+                _tabItem = new()
+                {
+                    Header = tabHeader,
+                    Content = content,
+                    IconSource = icon
+                };
+                _tabView.TabItems.Add(_tabItem);
+                return Task.FromResult(_tabItem);
             }
             return null;
         }

@@ -11,6 +11,9 @@ using System.Runtime.InteropServices;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
+using Windows.UI;
+using Windows.UI.ViewManagement;
+using WindowsCode.Studio.Models;
 using WindowsCode.Studio.Services;
 using WindowsCode.Studio.Views;
 using WindowsCode.Studio.Views.Dialogs;
@@ -24,6 +27,8 @@ namespace WindowsCode.Studio
     {
         private readonly AppWindow m_AppWindow;
 
+        private SettingsModel settingsModel;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -31,13 +36,17 @@ namespace WindowsCode.Studio
             PersistenceId = "MainWindow";
 
             App.SetMainWindow(this);
+
             EditorPage editor = new();
+
             ContentProvider.Navigate(editor.GetType());
 
             CheckWindowsVersion();
+
             GetCurrentUserAccount();
 
             AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/CodeStudioCanary.ico"));
+
             m_AppWindow = GetAppWindowForCurrentWindow();
 
             if (AppWindowTitleBar.IsCustomizationSupported())
@@ -55,8 +64,12 @@ namespace WindowsCode.Studio
             {
                 AppTitleBar.Visibility = Visibility.Collapsed;
             }
+
             Title = Windows.ApplicationModel.Package.Current.DisplayName;
+
             App.SetContentProvider(ContentProvider);
+
+            CheckSettingsFile();
         }
 
         private void CheckWindowsVersion()
@@ -136,6 +149,70 @@ namespace WindowsCode.Studio
             }
         }
 
+        private ElementTheme requestedTheme = ElementTheme.Default;
+        private ApplicationTheme actualTheme = ApplicationTheme.Dark;
+
+        public ElementTheme RequestedTheme
+        {
+            get => requestedTheme;
+            set
+            {
+                requestedTheme = value;
+
+                switch (value)
+                {
+                    case ElementTheme.Dark: actualTheme = ApplicationTheme.Dark; break;
+                    case ElementTheme.Light: actualTheme = ApplicationTheme.Light; break;
+                    case ElementTheme.Default:
+                        UISettings uiSettings = new();
+                        Color defaultthemecolor = uiSettings.GetColorValue(UIColorType.Background);
+                        actualTheme = defaultthemecolor == Colors.Black ? ApplicationTheme.Dark : ApplicationTheme.Light;
+                        break;
+                }
+            }
+        }
+
+        private async void CheckSettingsFile()
+        {
+            settingsModel = await SettingsService.ReadSettingsFileAsync(Content);
+
+            if (settingsModel == null)
+            {
+                // If the settings file doesn't exist, create a new settings model
+                settingsModel = new SettingsModel();
+
+                // Save the newly created settings to the file
+                new SettingsService().CreateSettingsFileJson(Content);
+
+                // You might want to consider awaiting the file creation before proceeding
+                // await new SettingsService().CreateSettingsFileJsonAsync(settingsModel);
+
+                // Optionally, you can re-read the settings file to ensure it was created and loaded correctly
+                settingsModel = await SettingsService.ReadSettingsFileAsync(Content);
+            }
+
+            // Now you have either loaded settings from the file or created new ones
+            // Do further processing as needed
+            AppInfoReporter.IsOpen = settingsModel.IsConfidentialInfoBarEnabled;
+
+            if (settingsModel.AppTheme != SettingsModel.Theme.Default)
+            {
+                //RequestedTheme = settingsModel.AppTheme != SettingsModel.Theme.Light ? ElementTheme.Dark : ElementTheme.Light;
+            }
+            else
+            {
+                UISettings uISettings = new();
+                uISettings.ColorValuesChanged += (sender, args) =>
+                {
+                    Color systemBackgroundColor = sender.GetColorValue(UIColorType.Background);
+
+                    bool isDarkTheme = systemBackgroundColor.R + systemBackgroundColor.G + systemBackgroundColor.B < 382;
+
+                    Application.Current.RequestedTheme = isDarkTheme ? ApplicationTheme.Dark : ApplicationTheme.Light;
+                };
+            }
+        }
+
         #region WinPTR
         private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
         {
@@ -156,7 +233,7 @@ namespace WindowsCode.Studio
         private AppWindow GetAppWindowForCurrentWindow()
         {
             IntPtr hWnd = WindowNative.GetWindowHandle(this);
-            WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            Microsoft.UI.WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
             return AppWindow.GetFromWindowId(wndId);
         }
 
@@ -173,7 +250,7 @@ namespace WindowsCode.Studio
         private double GetScaleAdjustment()
         {
             IntPtr hWnd = WindowNative.GetWindowHandle(this);
-            WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            Microsoft.UI.WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
             DisplayArea displayArea = DisplayArea.GetFromWindowId(wndId, DisplayAreaFallback.Primary);
             IntPtr hMonitor = Win32Interop.GetMonitorFromDisplayId(displayArea.DisplayId);
 
@@ -235,43 +312,14 @@ namespace WindowsCode.Studio
         private async void AboutItem_Click(object sender, RoutedEventArgs e)
         {
             await new AboutDialog() { XamlRoot = Content.XamlRoot }.ShowAsync();
-            //ContentDialog aboutDialog = new()
-            //{
-            //    Title = "About",
-            //    Content = "Product Name: " + Windows.ApplicationModel.Package.Current.DisplayName
-            //            + "\nVersion: " + Windows.ApplicationModel.Package.Current.Id.Version.Major
-            //            + "." + Windows.ApplicationModel.Package.Current.Id.Version.Minor
-            //            + "." + Windows.ApplicationModel.Package.Current.Id.Version.Build
-            //            + "." + Windows.ApplicationModel.Package.Current.Id.Version.Revision
-            //            + "\nPublisher: " + Windows.ApplicationModel.Package.Current.PublisherDisplayName
-            //            + "\nLicense: Mozilla Public License Version 2.0",
-            //    PrimaryButtonText = "See License Information",
-            //    CloseButtonText = "Close",
-            //    DefaultButton = ContentDialogButton.Close,
-            //    XamlRoot = Content.XamlRoot
-            //};
-            //ContentDialogResult dialogResult = await aboutDialog.ShowAsync();
-            //if (dialogResult == ContentDialogResult.Primary)
-            //{
-            //    string url = "https://raw.githubusercontent.com/rencerace/WCS/canary/LICENSE";
-            //    string browser = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
-            //    _ = Process.Start(new ProcessStartInfo(browser, url));
-            //}
         }
 
         private void ShowWelcomePage_Click(object sender, RoutedEventArgs e)
         {
-            if (App.GetEditorPage() != null)
-            {
-                TabService tabService = new(App.GetEditorPage().FileTabView);
+            TabService tabService = new(App.GetEditorPage().FileTabView);
 
-                tabService.CreateTabItem("Welcome", new WelcomePage());
-                tabService.GetTabView().SelectedIndex += 1;
-            }
-            else
-            {
-                ContentProvider.Navigate(typeof(WelcomePage));
-            }
+            tabService.CreateTabItem("Welcome", new WelcomePage());
+            tabService.GetTabView().SelectedIndex += 1;
         }
 
         private async void NewFile_Click(object sender, RoutedEventArgs e)
@@ -282,25 +330,17 @@ namespace WindowsCode.Studio
 
             if (dialogResult == ContentDialogResult.Primary && !string.IsNullOrEmpty(newFileDialog.GetFileName()))
             {
-                if (App.GetEditorPage() != null)
-                {
-                    TabService tabService = new(App.GetEditorPage().FileTabView);
-
-                    tabService.CreateTabItem($"{newFileDialog.GetFileName()}", new EditBoxTabView());
-                    tabService.GetTabView().SelectedIndex += 1;
-                }
+                TabService tabService = new(App.GetEditorPage().FileTabView);
+                tabService.CreateTabItem($"{newFileDialog.GetFileName()}", new EditBoxTabView());
+                tabService.GetTabView().SelectedIndex += 1;
             }
         }
 
         private void AppOptionButton_Click(object sender, RoutedEventArgs e)
         {
-            if (App.GetEditorPage() != null)
-            {
-                TabService tabService = new(App.GetEditorPage().FileTabView);
-
-                tabService.CreateTabItem("Settings", new SettingsPage());
-                tabService.GetTabView().SelectedIndex += 1;
-            }
+            TabService tabService = new(App.GetEditorPage().FileTabView);
+            tabService.CreateTabItem("Settings", new SettingsPage());
+            tabService.GetTabView().SelectedIndex += 1;
         }
     }
 }
