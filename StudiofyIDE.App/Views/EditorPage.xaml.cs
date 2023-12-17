@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
+using WindowsCode.Studio.Models;
 using WindowsCode.Studio.Services;
 using WindowsCode.Studio.Views.TabViews;
 using WinRT.Interop;
@@ -40,6 +41,8 @@ namespace WindowsCode.Studio.Views
 
         private StorageFile _activeFile;
 
+        private SettingsModel settingsModel;
+
         public List<IStorageItem> storageItems;
 
         public EditorPage()
@@ -52,8 +55,6 @@ namespace WindowsCode.Studio.Views
 
             FileService = new();
             TabService = new(FileTabView);
-
-            TabService.CreateTabItem("Welcome", new WelcomePage());
         }
 
         private async void NewFileButton_Click(object sender, RoutedEventArgs e)
@@ -747,6 +748,16 @@ namespace WindowsCode.Studio.Views
             else
             {
                 EditorSplitView.IsPaneOpen = !EditorSplitView.IsPaneOpen;
+            }
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            settingsModel = await SettingsService.ReadSettingsFileAsync(Content);
+
+            if (settingsModel != null && settingsModel.DisplayShowWelcomePageOnStartup)
+            {
+                TabService.CreateTabItem("Welcome", new WelcomePage());
             }
         }
     }

@@ -24,8 +24,6 @@
                               Content="Terminal"/>
                 <ListViewItem x:Name="CommandBarSettingsItem"
                               Content="Command Bar"/>
-                <ListViewItem x:Name="AboutSettingsItem"
-                              Content="About"/>
             </ListView.Items>
         </ListView>
         <Frame x:Name="SectionFrame"

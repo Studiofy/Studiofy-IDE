@@ -14,10 +14,11 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Editor"
-           FontSize="26"
-           Margin="15,0"
-           FontWeight="SemiBold"
-           Grid.Row="0"/>
+        <Grid Grid.Row="0">
+            <TextBlock Text="Editor"
+                       FontSize="26"
+                       Margin="15,0"
+                       FontWeight="SemiBold"/>
+        </Grid>
     </Grid>
 </Page>

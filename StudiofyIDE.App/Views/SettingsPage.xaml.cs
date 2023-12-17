@@ -28,6 +28,14 @@ namespace WindowsCode.Studio.Views.Dialogs
             {
                 SectionFrame.Navigate(typeof(EditorSettingsPage));
             }
+            else if ((settingsNavigation.SelectedItem as ListViewItem) == TerminalSettingsItem)
+            {
+                SectionFrame.Navigate(typeof(TerminalSettingsPage));
+            }
+            else if ((settingsNavigation.SelectedItem as ListViewItem) == CommandBarSettingsItem)
+            {
+                SectionFrame.Navigate(typeof(CommandBarSettingsPage));
+            }
         }
     }
 }

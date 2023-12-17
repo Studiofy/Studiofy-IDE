@@ -214,51 +214,14 @@ namespace WindowsCode.Studio.Services
 
                                 await errorDialog.ShowAsync();
                             }
-
-                            //try
-                            //{
-                            //    PackageManager packman = new();
-
-                            //    // Uninstall the current unpackaged version
-                            //    DeploymentResult curPack = await packman.RemovePackageAsync(Windows.ApplicationModel.Package.Current.Id.FullName);
-
-                            //    if (!string.IsNullOrEmpty(curPack.ErrorText))
-                            //    {
-                            //        ContentDialog errorDialog = new()
-                            //        {
-                            //            Title = "Error on Uninstalling Previous Version",
-                            //            Content = curPack.ErrorText,
-                            //            CloseButtonText = "OK",
-                            //            DefaultButton = ContentDialogButton.Close,
-                            //            XamlRoot = content.XamlRoot
-                            //        };
-
-                            //        await errorDialog.ShowAsync();
-                            //        return; // Stop further processing if uninstallation fails
-                            //    }
-
-                            //    // Install the new packaged version using a separate process
-                            //    await InstallNewVersionAsync(content, filePath);
-                            //}
-                            //catch (Exception ex)
-                            //{
-                            //    ContentDialog errorDialog = new()
-                            //    {
-                            //        Title = "Error on Update",
-                            //        Content = ex.Message,
-                            //        CloseButtonText = "OK",
-                            //        DefaultButton = ContentDialogButton.Close,
-                            //        XamlRoot = content.XamlRoot
-                            //    };
-
-                            //    await errorDialog.ShowAsync();
-                            //}
                         }
                     }
                 }
                 else
                 {
-                    ContentDialog confirmDialog = new()
+                    checkUpdateDialog.Hide();
+
+                    checkUpdateDialog = new()
                     {
                         Title = "Studiofy IDE (Canary) is Up-to-Date",
                         Content = $"{Latest.Name.Replace("v", "version ").Replace("-Canary", " for Canary Channel")} is the Latest Version",
@@ -266,7 +229,7 @@ namespace WindowsCode.Studio.Services
                         DefaultButton = ContentDialogButton.Close,
                         XamlRoot = content.XamlRoot
                     };
-                    _ = await confirmDialog.ShowAsync();
+                    _ = await checkUpdateDialog.ShowAsync();
                 }
             }
             catch (Exception ex)
@@ -284,51 +247,6 @@ namespace WindowsCode.Studio.Services
                     };
                     _ = await exceptionDialog.ShowAsync();
                 }
-            }
-        }
-
-        private async Task InstallNewVersionAsync(UIElement element, string filePath)
-        {
-            try
-            {
-                // Use a new process for the installation
-                PackageManager packman = new();
-
-                // Use MSIX installation for the new version
-                DeploymentResult depRes = await packman.AddPackageByUriAsync(new Uri(filePath), new AddPackageOptions { ForceAppShutdown = true });
-
-                if (string.IsNullOrEmpty(depRes.ErrorText))
-                {
-                    // Restart the application after successful installation
-                    await Windows.ApplicationModel.Core.CoreApplication.RequestRestartAsync(string.Empty);
-                }
-
-                else
-                {
-                    ContentDialog errorDialog = new()
-                    {
-                        Title = "Error on Installing Update",
-                        Content = depRes.ErrorText,
-                        CloseButtonText = "OK",
-                        DefaultButton = ContentDialogButton.Close,
-                        XamlRoot = element.XamlRoot
-                    };
-
-                    await errorDialog.ShowAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                ContentDialog errorDialog = new()
-                {
-                    Title = "Error on Installing Update",
-                    Content = ex.Message,
-                    CloseButtonText = "OK",
-                    DefaultButton = ContentDialogButton.Close,
-                    XamlRoot = element.XamlRoot
-                };
-
-                await errorDialog.ShowAsync();
             }
         }
     }
