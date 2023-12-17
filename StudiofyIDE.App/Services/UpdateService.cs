@@ -21,6 +21,13 @@ namespace WindowsCode.Studio.Services
             Official
         }
 
+        public async Task<string> GetUpdateDescription()
+        {
+            GitHubClient GitClient = new(new ProductHeaderValue("Studiofy-IDE"));
+            IReadOnlyList<Release> Release = await GitClient.Repository.Release.GetAll("Studiofy", "Studiofy-IDE");
+            return Release[0].Body;
+        }
+
         public async Task GetUpdates(UIElement content)
         {
             Grid mainGrid = new()

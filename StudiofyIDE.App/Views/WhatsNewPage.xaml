@@ -6,10 +6,24 @@
     xmlns:local="using:WindowsCode.Studio.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    mc:Ignorable="d" Loaded="Page_Loaded">
 
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="75"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <TextBlock Text="What's New"
+                       FontSize="26"
+                       VerticalAlignment="Center"
+                       Margin="20,0"
+                       FontWeight="SemiBold"/>
+        </Grid>
+        <Grid Grid.Row="1"
+              Margin="20,0,20,20">
+            <TextBlock x:Name="AppRelease"
+                       TextWrapping="Wrap"/>
+        </Grid>
     </Grid>
 </Page>
