@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using CommunityToolkit.WinUI.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -757,7 +758,26 @@ namespace WindowsCode.Studio.Views
 
             if (settingsModel != null && settingsModel.DisplayShowWelcomePageOnStartup)
             {
-                TabService.CreateTabItem("Welcome", new WelcomePage());
+                TabViewItem welcomeTab = await TabService.CreateTabItemAsync("Welcome", new WelcomePage(), new SymbolIconSource()
+                {
+                    Symbol = Symbol.Document
+                });
+                TabService.GetTabHeader(welcomeTab);
+
+                if (SystemInformation.Instance.IsAppUpdated)
+                {
+                    TabViewItem whatsNewTab = await TabService.CreateTabItemAsync("What's New", new WhatsNewPage(), new FontIconSource()
+                    {
+                        FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Segoe Fluent Icons"),
+                        Glyph = "&#xE789;"
+                    });
+                    TabService.GetTabHeader(whatsNewTab);
+                    FileTabView.SelectedIndex = FileTabView.TabItems.IndexOf(whatsNewTab);
+                }
+                else
+                {
+                    FileTabView.SelectedIndex = FileTabView.TabItems.IndexOf(welcomeTab);
+                }
             }
         }
     }

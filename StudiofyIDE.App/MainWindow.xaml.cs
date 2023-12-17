@@ -3,7 +3,6 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +11,8 @@ using System.Runtime.InteropServices;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 using WindowsCode.Studio.Models;
 using WindowsCode.Studio.Services;
 using WindowsCode.Studio.Views;
@@ -42,8 +43,6 @@ namespace WindowsCode.Studio
 
             CheckWindowsVersion();
 
-            CheckSettingsFile();
-
             GetCurrentUserAccount();
 
             AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/CodeStudioCanary.ico"));
@@ -65,10 +64,12 @@ namespace WindowsCode.Studio
             {
                 AppTitleBar.Visibility = Visibility.Collapsed;
             }
-            
+
             Title = Windows.ApplicationModel.Package.Current.DisplayName;
 
             App.SetContentProvider(ContentProvider);
+
+            CheckSettingsFile();
         }
 
         private void CheckWindowsVersion()
@@ -148,6 +149,29 @@ namespace WindowsCode.Studio
             }
         }
 
+        private ElementTheme requestedTheme = ElementTheme.Default;
+        private ApplicationTheme actualTheme = ApplicationTheme.Dark;
+
+        public ElementTheme RequestedTheme
+        {
+            get => requestedTheme;
+            set
+            {
+                requestedTheme = value;
+
+                switch (value)
+                {
+                    case ElementTheme.Dark: actualTheme = ApplicationTheme.Dark; break;
+                    case ElementTheme.Light: actualTheme = ApplicationTheme.Light; break;
+                    case ElementTheme.Default:
+                        UISettings uiSettings = new();
+                        Color defaultthemecolor = uiSettings.GetColorValue(UIColorType.Background);
+                        actualTheme = defaultthemecolor == Colors.Black ? ApplicationTheme.Dark : ApplicationTheme.Light;
+                        break;
+                }
+            }
+        }
+
         private async void CheckSettingsFile()
         {
             settingsModel = await SettingsService.ReadSettingsFileAsync(Content);
@@ -170,8 +194,24 @@ namespace WindowsCode.Studio
             // Now you have either loaded settings from the file or created new ones
             // Do further processing as needed
             AppInfoReporter.IsOpen = settingsModel.IsConfidentialInfoBarEnabled;
-        }
 
+            if (settingsModel.AppTheme != SettingsModel.Theme.Default)
+            {
+                //RequestedTheme = settingsModel.AppTheme != SettingsModel.Theme.Light ? ElementTheme.Dark : ElementTheme.Light;
+            }
+            else
+            {
+                UISettings uISettings = new();
+                uISettings.ColorValuesChanged += (sender, args) =>
+                {
+                    Color systemBackgroundColor = sender.GetColorValue(UIColorType.Background);
+
+                    bool isDarkTheme = systemBackgroundColor.R + systemBackgroundColor.G + systemBackgroundColor.B < 382;
+
+                    Application.Current.RequestedTheme = isDarkTheme ? ApplicationTheme.Dark : ApplicationTheme.Light;
+                };
+            }
+        }
 
         #region WinPTR
         private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
@@ -193,7 +233,7 @@ namespace WindowsCode.Studio
         private AppWindow GetAppWindowForCurrentWindow()
         {
             IntPtr hWnd = WindowNative.GetWindowHandle(this);
-            WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            Microsoft.UI.WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
             return AppWindow.GetFromWindowId(wndId);
         }
 
@@ -210,7 +250,7 @@ namespace WindowsCode.Studio
         private double GetScaleAdjustment()
         {
             IntPtr hWnd = WindowNative.GetWindowHandle(this);
-            WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            Microsoft.UI.WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
             DisplayArea displayArea = DisplayArea.GetFromWindowId(wndId, DisplayAreaFallback.Primary);
             IntPtr hMonitor = Win32Interop.GetMonitorFromDisplayId(displayArea.DisplayId);
 
@@ -289,7 +329,7 @@ namespace WindowsCode.Studio
             ContentDialogResult dialogResult = await newFileDialog.ShowAsync();
 
             if (dialogResult == ContentDialogResult.Primary && !string.IsNullOrEmpty(newFileDialog.GetFileName()))
-            {   
+            {
                 TabService tabService = new(App.GetEditorPage().FileTabView);
                 tabService.CreateTabItem($"{newFileDialog.GetFileName()}", new EditBoxTabView());
                 tabService.GetTabView().SelectedIndex += 1;

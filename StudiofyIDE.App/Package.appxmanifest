@@ -10,7 +10,7 @@
   <Identity
     Name="Studiofy-IDE-740e40-91bf89-563ace993d44"
     Publisher="CN=Studiofy"
-    Version="1.0.1030.0" />
+    Version="1.0.1030.1" />
 
   <Properties>
     <DisplayName>Studiofy IDE (Canary)</DisplayName>

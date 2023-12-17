@@ -28,9 +28,11 @@ namespace WindowsCode.Studio
             Title = string.Empty;
             this.SetIsShownInSwitchers(false);
             CheckWindowsVersion();
-            VersionText.Text = "version " + Package.Current.Id.Version.Major + "."
-                                          + Package.Current.Id.Version.Minor + "."
-                                          + Package.Current.Id.Version.Build;
+            VersionText.Text = "version " +
+                  Package.Current.Id.Version.Major + "." +
+                  Package.Current.Id.Version.Minor + "." +
+                  Package.Current.Id.Version.Build +
+                  ((Package.Current.Id.Version.Revision != 0) ? "." + Package.Current.Id.Version.Revision.ToString() : string.Empty);
         }
 
         private void CheckWindowsVersion()

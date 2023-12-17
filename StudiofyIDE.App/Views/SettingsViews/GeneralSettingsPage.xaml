@@ -41,7 +41,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="60"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Enable Confidential InfoBar Message (Requires Restart)"
+                        <TextBlock x:Name="txtInfoBarSetting" Grid.Column="0" Text="Enable Confidential InfoBar Message"
                            Margin="16,0"
                            VerticalAlignment="Center"/>
                         <ToggleSwitch x:Name="ConfidentialInfoBarMessageToggleSwitch" Grid.Column="1" OffContent="" OnContent=""
@@ -65,7 +65,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="210"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Appearance (Requires Restart)"
+                        <TextBlock Grid.Column="0" Text="Appearance"
                            Margin="16,0"
                            VerticalAlignment="Center"/>
                         <ComboBox x:Name="ThemeSelector" 
@@ -76,8 +76,8 @@
                                   Width="160"
                                   SelectionChanged="ThemeSelector_SelectionChanged">
                             <ComboBoxItem Content="Windows Default"/>
-                            <ComboBoxItem Content="Dark"/>
-                            <ComboBoxItem Content="Light"/>
+                            <ComboBoxItem Content="Light" IsEnabled="false"/>
+                            <ComboBoxItem Content="Dark" IsEnabled="false"/>
                         </ComboBox>
                     </Grid>
                 </Button.Content>
