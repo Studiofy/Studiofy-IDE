@@ -1,9 +1,12 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Markdig;
+using Markdig.Syntax;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Octokit;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -13,7 +16,6 @@ namespace WindowsCode.Studio.Services
 {
     public class UpdateService
     {
-
         public enum Version
         {
             Canary,
@@ -21,11 +23,34 @@ namespace WindowsCode.Studio.Services
             Official
         }
 
-        public async Task<string> GetUpdateDescription()
+        public async Task<string> GetUpdateDescription(XamlRoot root)
         {
             GitHubClient GitClient = new(new ProductHeaderValue("Studiofy-IDE"));
-            IReadOnlyList<Release> Release = await GitClient.Repository.Release.GetAll("Studiofy", "Studiofy-IDE");
-            return Release[0].Body;
+
+            try
+            {
+                IReadOnlyList<Release> Release = await GitClient.Repository.Release.GetAll("Studiofy", "Studiofy-IDE");
+                return Release[0].Body;
+            }
+            catch (RateLimitExceededException ex)
+            {
+                await new ContentDialog()
+                {
+                    Title = ex.Source,
+                    Content = ex.Message,
+                    CloseButtonText = "Close",
+                    DefaultButton = ContentDialogButton.Close,
+                    XamlRoot = root
+                }.ShowAsync();
+                return null;
+            }
+        }
+
+        public List<Block> ParseMarkdown(string markdownText)
+        {
+            MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+            MarkdownDocument document = Markdown.Parse(markdownText, pipeline);
+            return document.ToList();
         }
 
         public async Task GetUpdates(UIElement content)

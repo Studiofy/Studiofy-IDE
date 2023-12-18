@@ -319,7 +319,9 @@
                                  AccessKey="H">
                         <MenuBarItem.Items>
                             <MenuFlyoutItem Text="Getting Started"/>
-                            <MenuFlyoutItem Text="What's New?"/>
+                            <MenuFlyoutItem x:Name="WhatsNewMenuItem" 
+                                            Text="What's New?"
+                                            Click="WhatsNewMenuItem_Click"/>
                             <MenuFlyoutSeparator/>
                             <MenuFlyoutItem x:Name="UpdateItem"
                                             Text="Check for Updates"

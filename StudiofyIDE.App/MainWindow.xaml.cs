@@ -342,5 +342,17 @@ namespace WindowsCode.Studio
             tabService.CreateTabItem("Settings", new SettingsPage());
             tabService.GetTabView().SelectedIndex += 1;
         }
+
+        private async void WhatsNewMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            TabService tabService = new(App.GetEditorPage().FileTabView);
+            TabViewItem whatsNewTab = await tabService.CreateTabItemAsync("What's New", new WhatsNewPage(), new FontIconSource()
+            {
+                FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Segoe Fluent Icons"),
+                Glyph = "&#xE789;"
+            });
+            tabService.GetTabHeader(whatsNewTab);
+            tabService.GetTabView().SelectedIndex = tabService.GetTabView().TabItems.IndexOf(whatsNewTab);
+        }
     }
 }
