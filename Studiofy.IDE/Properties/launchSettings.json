@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Studiofy.IDE (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Studiofy.IDE (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
