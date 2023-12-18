@@ -25,6 +25,10 @@
     <None Remove="Pages\MainPage.xaml" />
     <None Remove="Pages\NavigationViewPages\ExplorerNavViewPage.xaml" />
     <None Remove="Pages\NavigationViewPages\ExtensionsNavViewPage.xaml" />
+    <None Remove="Pages\TabViewPages\EditorPage.xaml" />
+    <None Remove="Pages\TabViewPages\SettingsPage.xaml" />
+    <None Remove="Pages\TabViewPages\WelcomePage.xaml" />
+    <None Remove="Pages\TabViewPages\WhatsNewPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,12 +56,24 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Pages\MainPage.xaml">
+    <Page Update="Pages\TabViewPages\EditorPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Pages\TabViewPages\" />
+    <Page Update="Pages\TabViewPages\WhatsNewPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\TabViewPages\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\NavigationViewPages\ExtensionsNavViewPage.xaml">
@@ -67,6 +83,9 @@
   <ItemGroup>
     <Page Update="Pages\NavigationViewPages\ExplorerNavViewPage.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\TabViewPages\WelcomePage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
 

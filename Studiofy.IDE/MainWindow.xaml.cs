@@ -3,8 +3,8 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Studiofy.IDE.Pages;
 using Studiofy.IDE.Pages.NavigationViewPages;
+using Studiofy.IDE.Pages.TabViewPages;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -50,13 +50,13 @@ namespace Studiofy.IDE
 
             Title = Windows.ApplicationModel.Package.Current.DisplayName;
 
-            AppNavigationView.SelectedItem = ExplorerMenuItem;
+            AppNavigationView.SelectedItem = ExplorerNavMenuItem;
             AppContentFrame.Navigate(typeof(ExplorerNavViewPage));
 
             EditorTabView.TabItems.Add(new TabViewItem()
             {
                 Header = "Welcome",
-                Content = new MainPage(),
+                Content = new WelcomePage(),
                 IconSource = new SymbolIconSource()
                 {
                     Symbol = Symbol.Document
@@ -155,14 +155,56 @@ namespace Studiofy.IDE
 
         private void AppNavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-            if (sender.SelectedItem as NavigationViewItem == ExplorerMenuItem)
+            if (sender.SelectedItem as NavigationViewItem == ExplorerNavMenuItem)
             {
                 AppContentFrame.Navigate(typeof(ExplorerNavViewPage));
             }
-            else if (sender.SelectedItem as NavigationViewItem == ExtensionMenuItem)
+            else if (sender.SelectedItem as NavigationViewItem == ExtensionNavMenuItem)
             {
                 AppContentFrame.Navigate(typeof(ExtensionsNavViewPage));
             }
+        }
+
+        private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            TabViewItem settingsTab = new()
+            {
+                Header = "Settings",
+                Content = new SettingsPage(),
+                IconSource = new SymbolIconSource()
+                {
+                    Symbol = Symbol.Setting
+                }
+            };
+
+            EditorTabView.TabItems.Add(settingsTab);
+            EditorTabView.SelectedItem = settingsTab;
+        }
+
+        private void EditorTabView_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
+        {
+            sender.TabItems.Remove(args.Item);
+        }
+
+        private void ShowWelcomePageMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            TabViewItem welcomeTab = new()
+            {
+                Header = "Settings",
+                Content = new WelcomePage(),
+                IconSource = new SymbolIconSource()
+                {
+                    Symbol = Symbol.Document
+                }
+            };
+
+            EditorTabView.TabItems.Add(welcomeTab);
+            EditorTabView.SelectedItem = welcomeTab;
+        }
+
+        private void EditorTabView_Loaded(object sender, RoutedEventArgs e)
+        {
+            AppStatus.Text = "Ready";
         }
     }
 }

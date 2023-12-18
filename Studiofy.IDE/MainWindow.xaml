@@ -88,6 +88,10 @@
                                 <ImageIcon Source="/Assets/GitHubLogo.png"/>
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Name="ShowWelcomePageMenuItem"
+                                        Text="Show Welcome Page"
+                                        Click="ShowWelcomePageMenuItem_Click"
+                                        Icon="Home"/>
                         <MenuFlyoutSeparator/>
                         <MenuFlyoutItem x:Name="CloseWindowMenuItem"
                                         Text="Exit">
@@ -162,9 +166,44 @@
                     </ToggleMenuFlyoutItem>
                 </MenuBarItem>
                 <MenuBarItem Title="Tools">
-                    
+                    <MenuFlyoutSubItem Text="Theme">
+                        <RadioMenuFlyoutItem Text="Use System Theme"/>
+                        <RadioMenuFlyoutItem Text="Light"/>
+                        <RadioMenuFlyoutItem Text="Dark"/>
+                    </MenuFlyoutSubItem>
+                    <MenuFlyoutSeparator/>
+                    <MenuFlyoutItem x:Name="ImportExportSettingsMenuItem"
+                                    Text="Import/Export Settings"/>
+                    <MenuFlyoutItem x:Name="SettingsMenuItem"
+                                    Text="Settings"
+                                    Icon="Setting"
+                                    Click="SettingsMenuItem_Click">
+                        <MenuFlyoutItem.KeyboardAccelerators>
+                            <KeyboardAccelerator Modifiers="Control,Menu" Key="O"/>
+                        </MenuFlyoutItem.KeyboardAccelerators>
+                    </MenuFlyoutItem>
                 </MenuBarItem>
-                <MenuBarItem Title="Help"/>
+                <MenuBarItem Title="Help">
+                    <MenuFlyoutItem x:Name="ViewHelpMenuItem"
+                                    Text="View Help"
+                                    Icon="Help">
+                        <MenuFlyoutItem.KeyboardAccelerators>
+                            <KeyboardAccelerator Key="F1"/>
+                        </MenuFlyoutItem.KeyboardAccelerators>
+                    </MenuFlyoutItem>
+                    <MenuFlyoutSeparator/>
+                    <MenuFlyoutItem x:Name="GettingStartedMenuItem"
+                                    Text="Getting Started"/>
+                    <MenuFlyoutItem x:Name="WhatsNewMenuItem"
+                                    Text="What's New"/>
+                    <MenuFlyoutSeparator/>
+                    <MenuFlyoutItem x:Name="AboutMenuItem"
+                                    Text="About Studiofy IDE">
+                        <MenuFlyoutItem.Icon>
+                            <FontIcon Glyph="&#xE946;"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                </MenuBarItem>
             </MenuBar>
             <AutoSuggestBox x:Name="AppSuggestBox" 
                             Grid.Column="5"
@@ -172,7 +211,13 @@
                             Width="250"
                             QueryIcon="Find"
                             Margin="0,0,10,0"
-                            VerticalAlignment="Center"/>
+                            VerticalAlignment="Center"
+                            PlaceholderText="Search"
+                            ToolTipService.ToolTip="Press Ctrl+F2 or Click Here to Search">
+                <AutoSuggestBox.KeyboardAccelerators>
+                    <KeyboardAccelerator Modifiers="Control" Key="F2"/>
+                </AutoSuggestBox.KeyboardAccelerators>
+            </AutoSuggestBox>
         </Grid>
         <Grid x:Name="WindowContent"
               Grid.Row="1">
@@ -206,7 +251,7 @@
                                 Grid.Row="0"
                                 SelectionChanged="AppNavigationView_SelectionChanged">
                     <NavigationView.MenuItems>
-                        <NavigationViewItem x:Name="ExplorerMenuItem" 
+                        <NavigationViewItem x:Name="ExplorerNavMenuItem" 
                             Content="Explorer"
                             ToolTipService.ToolTip="Explorer (Windows+Shift+E)"
                             ToolTipService.Placement="Right">
@@ -217,7 +262,7 @@
                                 <KeyboardAccelerator Modifiers="Windows,Shift" Key="E"/>
                             </NavigationViewItem.KeyboardAccelerators>
                         </NavigationViewItem>
-                        <NavigationViewItem x:Name="ExtensionMenuItem"
+                        <NavigationViewItem x:Name="ExtensionNavMenuItem"
                             Content="Extensions"
                             ToolTipService.ToolTip="Extensions (Windows+Shift+X)"
                             ToolTipService.Placement="Right">
@@ -232,28 +277,8 @@
                     <NavigationView.Content>
                         <Frame x:Name="AppContentFrame"/>
                     </NavigationView.Content>
-                    <NavigationView.ContextFlyout>
-                        <MenuFlyout>
-                            <ToggleMenuFlyoutItem Text="Explorer">
-                                <ToggleMenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xEC50;"/>
-                                </ToggleMenuFlyoutItem.Icon>
-                                <ToggleMenuFlyoutItem.KeyboardAccelerators>
-                                    <KeyboardAccelerator Modifiers="Windows,Shift" Key="E"/>
-                                </ToggleMenuFlyoutItem.KeyboardAccelerators>
-                            </ToggleMenuFlyoutItem>
-                            <ToggleMenuFlyoutItem Text="Extensions">
-                                <ToggleMenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xEA86;"/>
-                                </ToggleMenuFlyoutItem.Icon>
-                                <ToggleMenuFlyoutItem.KeyboardAccelerators>
-                                    <KeyboardAccelerator Modifiers="Windows,Shift" Key="X"/>
-                                </ToggleMenuFlyoutItem.KeyboardAccelerators>
-                            </ToggleMenuFlyoutItem>
-                        </MenuFlyout>
-                    </NavigationView.ContextFlyout>
                     <NavigationView.FooterMenuItems>
-                        <NavigationViewItem x:Name="WhatsNewMenuItem"
+                        <NavigationViewItem x:Name="WhatsNewNavMenuItem"
                             Content="What's New"
                             ToolTipService.ToolTip="What's New (Windows+Shift+F1)"
                             ToolTipService.Placement="Right">
@@ -268,8 +293,15 @@
                 </NavigationView>
                 <TabView x:Name="EditorTabView"
                          Grid.Column="1"
-                                Grid.Row="0"
-                         IsAddTabButtonVisible="False"/>
+                         Grid.Row="0"
+                         IsAddTabButtonVisible="False"
+                         HorizontalContentAlignment="Stretch"
+                         VerticalContentAlignment="Stretch"
+                         VerticalAlignment="Stretch"
+                         HorizontalAlignment="Stretch"
+                         TabCloseRequested="EditorTabView_TabCloseRequested"
+                         Margin="0,-5,0,0"
+                         Loaded="EditorTabView_Loaded"/>
             </Grid>
         </Grid>
         <StackPanel x:Name="StatusBarStackPanel"
@@ -287,7 +319,6 @@
             </Button>
             <AppBarSeparator/>
             <TextBlock x:Name="AppStatus"
-                       Text="Hello"
                        VerticalAlignment="Center"
                        FontSize="12"
                        Margin="4,0"/>
