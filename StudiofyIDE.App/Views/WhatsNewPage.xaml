@@ -12,8 +12,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid x:Name="ReleaseBody" 
+        <StackPanel Orientation="Vertical" x:Name="ReleaseBody" 
               Grid.Row="0"
-              Margin="20,-10,20,20"/>
+              Margin="20"/>
     </Grid>
 </Page>

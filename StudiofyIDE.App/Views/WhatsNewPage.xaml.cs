@@ -22,6 +22,33 @@ namespace WindowsCode.Studio.Views
             InitializeComponent();
         }
 
+        private bool TryParseMarkdownLink(string text, out string linkText, out string linkUrl)
+        {
+            linkText = null;
+            linkUrl = null;
+
+            if (text.Contains("[") && text.Contains("]("))
+            {
+                int startBracketIndex = text.IndexOf('[');
+                int endBracketIndex = text.IndexOf(']');
+                int startParenthesisIndex = text.IndexOf('(');
+                int endParenthesisIndex = text.IndexOf(')');
+
+                if (startBracketIndex < endBracketIndex && endBracketIndex < startParenthesisIndex &&
+                    startParenthesisIndex < endParenthesisIndex)
+                {
+                    // Adjusted indices to include the characters at the specified positions
+                    linkText = text.Substring(startBracketIndex + 1, endBracketIndex - startBracketIndex - 1);
+                    linkUrl = text.Substring(startParenthesisIndex + 1, endParenthesisIndex - startParenthesisIndex - 1);
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
         private List<UIElement> ConvertMarkdownToUIElements(List<Block> markdownBlocks)
         {
             List<UIElement> uiElements = new();
@@ -30,7 +57,7 @@ namespace WindowsCode.Studio.Views
 
             foreach (Block block in markdownBlocks)
             {
-                double currentBottomMargin = previousBottomMargin + 10;
+                double currentBottomMargin = previousBottomMargin;
 
                 if (block is HeadingBlock heading)
                 {
@@ -38,9 +65,9 @@ namespace WindowsCode.Studio.Views
                     TextBlock headingTextBlock = new()
                     {
                         Text = heading.Inline.FirstChild.ToString(),
-                        FontSize = 18,
+                        FontSize = 24,
                         FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                        Margin = new Thickness(0, currentBottomMargin * 2, 0, 0)
+                        Margin = new Thickness(0, currentBottomMargin + 10, 0, currentBottomMargin + 10)
                     };
 
                     uiElements.Add(headingTextBlock);
@@ -61,7 +88,7 @@ namespace WindowsCode.Studio.Views
                         TextBlock listItemTextBlock = new()
                         {
                             Text = $"{listItemText}",
-                            Margin = new Thickness(15, currentBottomMargin * 4, 0, 0) // Adjusted margin for list items
+                            Margin = new Thickness(15, currentBottomMargin, 0, 0) // Adjusted margin for list items
                         };
 
                         uiElements.Add(listItemTextBlock);
@@ -78,23 +105,76 @@ namespace WindowsCode.Studio.Views
                             {
                                 Content = linkInline.FirstChild.ToString(),
                                 NavigateUri = new Uri(linkInline.Url),
-                                Margin = new Thickness(0, currentBottomMargin * 0, 5, 0)
+                                Margin = new Thickness(0, currentBottomMargin, 5, 0)
                             };
 
                             uiElements.Add(hyperlink);
                         }
-                        else
+                        else if (inline is LiteralInline literalInline)
                         {
-                            // For other inline elements, let's add a TextBlock
+                            string textContent = literalInline.Content.ToString();
+
+                            // Check for Markdown hyperlink format [text](url)
+                            if (TryParseMarkdownLink(textContent, out string linkText, out string linkUrl))
+                            {
+                                HyperlinkButton hyperlink = new()
+                                {
+                                    Content = linkText,
+                                    NavigateUri = new Uri(linkUrl),
+                                    Margin = new Thickness(15, currentBottomMargin, 5, 0) // Adjusted margin for content under headings
+                                };
+
+                                uiElements.Add(hyperlink);
+                            }
+                            else if (textContent.Contains("#") && int.TryParse(textContent.Substring(1), out int pullRequestId))
+                            {
+                                // Assuming the base URL for pull requests
+                                string baseUrl = "https://github.com/Studiofy/Studiofy-IDE/pull/";
+
+                                HyperlinkButton prLinkButton = new()
+                                {
+                                    Content = textContent,
+                                    NavigateUri = new Uri($"{baseUrl}{pullRequestId}"),
+                                    Margin = new Thickness(15, currentBottomMargin, 5, 0) // Adjusted margin for content under headings
+                                };
+
+                                uiElements.Add(prLinkButton);
+                            }
+                            else
+                            {
+                                // For other inline elements, let's add a TextBlock
+                                TextBlock textBlock = new()
+                                {
+                                    Text = textContent,
+                                    Margin = new Thickness(15, currentBottomMargin, 5, 0) // Adjusted margin for content under headings
+                                };
+
+                                uiElements.Add(textBlock);
+                            }
+                        }
+                        else if (inline is EmphasisInline emphasisInline)
+                        {
+                            // For emphasized text, let's add a TextBlock with italic font style
                             TextBlock textBlock = new()
                             {
-                                Text = inline.NextSibling.ToString(),
+                                Text = emphasisInline.ToString(),
                                 Margin = new Thickness(0, currentBottomMargin, 5, 0)
                             };
 
                             uiElements.Add(textBlock);
                         }
                     }
+                }
+                else if (block is QuoteBlock quote)
+                {
+                    // Create a TextBlock for quotes
+                    TextBlock quoteTextBlock = new()
+                    {
+                        Text = quote.QuoteLines.ToString(),
+                        Margin = new Thickness(0, currentBottomMargin * 2, 0, 0)
+                    };
+
+                    uiElements.Add(quoteTextBlock);
                 }
 
                 previousBottomMargin = currentBottomMargin;
@@ -110,6 +190,9 @@ namespace WindowsCode.Studio.Views
             List<Block> markdownBlocks = new UpdateService().ParseMarkdown(content);
 
             List<UIElement> uiElements = ConvertMarkdownToUIElements(markdownBlocks);
+
+            // Clear existing UIElements in ReleaseBody
+            ReleaseBody.Children.Clear();
 
             foreach (UIElement uiElement in uiElements)
             {
