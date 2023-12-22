@@ -6,10 +6,81 @@
     xmlns:local="using:Studiofy.TextEditor"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    mc:Ignorable="d">
 
-    <Grid>
-
+    <Grid x:Name="Parent"
+          CanBeScrollAnchor="True"
+          PointerWheelChanged="Parent_PointerWheelChanged"
+          SizeChanged="Parent_SizeChanged">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid x:Name="ParentContent"
+              Grid.Column="0"
+              KeyDown="ParentContent_KeyDown"
+              KeyUp="ParentContent_KeyUp"
+              ManipulationMode="TranslateX,TranslateY,TranslateInertia,Scale"
+              ManipulationStarted="ParentContent_ManipulationStarted"
+              ManipulationDelta="ParentContent_ManipulationDelta">
+            <Grid x:Name="EditControl"
+                  AllowDrop="True"
+                  CanDrag="True"
+                  DragStarting="EditControl_DragStarting"
+                  DragEnter="EditControl_DragEnter"
+                  DragOver="EditControl_DragOver"
+                  Drop="EditControl_Drop"
+                  PointerMoved="EditControl_PointerMoved"
+                  PointerPressed="EditControl_PointerPressed"
+                  PointerReleased="EditControl_PointerReleased"
+                  PointerCaptureLost="EditControl_PointerCaptureLost"
+                  PointerCanceled="EditControl_PointerCanceled"
+                  PointerExited="EditControl_PointerExited">
+                <canvas:CanvasControl x:Name="CanvasSelection"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Draw="CanvasSelection_Draw"/>
+                <canvas:CanvasControl x:Name="CanvasBeam"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Draw="CanvasBeam_Draw"/>
+                <canvas:CanvasControl x:Name="CanvasText"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Draw="CanvasText_Draw"/>
+            </Grid>
+        </Grid>
+        <ScrollBar x:Name="VerticalScrollBar"
+                   Grid.Column="1"
+                   PointerEntered="VerticalScrollBar_PointerEntered"
+                   Value="0"
+                   SmallChange="10"
+                   LargeChange="10"
+                   ValueChanged="VerticalScrollBar_ValueChanged"
+                   IndicatorMode="MouseIndicator"
+                   Maximum="500"
+                   Orientation="Vertical"
+                   Scroll="VerticalScrollBar_Scroll"
+                   ViewportSize="100"
+                   Visibility="Visible"
+                   HorizontalAlignment="Right"/>
+        <ScrollBar x:Name="HorizontalScrollBar"
+                   Grid.Row="1"
+                   Grid.Column="0"
+                   Value="0"
+                   Maximum="500"
+                   ViewportSize="100"
+                   Orientation="Horizontal"
+                   SmallChange="10"
+                   LargeChange="100"
+                   ValueChanged="HorizontalScrollBar_ValueChanged"
+                   IndicatorMode="MouseIndicator"
+                   PointerEntered="HorizontalScrollBar_PointerEntered"
+                   Visibility="Visible"/>
     </Grid>
 </Page>
