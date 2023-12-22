@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.22000.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.22000.0</TargetPlatformMinVersion>
     <RootNamespace>Studiofy.IDE</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -13,15 +13,25 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <SupportedOSPlatformVersion>10.0.22000.0</SupportedOSPlatformVersion>
     <ApplicationIcon>StudiofyIDECanaryLogo.ico</ApplicationIcon>
-    <PackageCertificateThumbprint>B23A62B724186236701E8D97FEB04FD80E4E331D</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>Studiofy.IDE_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxPackageSigningTimestampServerUrl>http://sha256timestamp.ws.symantec.com/sha256/timestamp</AppxPackageSigningTimestampServerUrl>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppxBundle>Never</AppxBundle>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\StudiofyIDECanaryLogo.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\GitHubLogo.png" />
+    <None Remove="Dialogs\AboutDialog.xaml" />
+    <None Remove="Dialogs\CloneRepositoryDialog.xaml" />
+    <None Remove="Dialogs\NewFileDialog.xaml" />
     <None Remove="Pages\MainPage.xaml" />
     <None Remove="Pages\NavigationViewPages\ExplorerNavViewPage.xaml" />
     <None Remove="Pages\NavigationViewPages\ExtensionsNavViewPage.xaml" />
@@ -42,6 +52,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Collections" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.TokenizingTextBox" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Helpers" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Triggers" Version="8.0.230907" />
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.1.1" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
     <Manifest Include="$(ApplicationManifest)" />
@@ -56,6 +77,21 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Studiofy.Common\Studiofy.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Dialogs\AboutDialog.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Dialogs\CloneRepositoryDialog.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Dialogs\NewFileDialog.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Pages\TabViewPages\EditorPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

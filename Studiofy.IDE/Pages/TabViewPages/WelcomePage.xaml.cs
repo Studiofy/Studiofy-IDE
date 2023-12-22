@@ -3,6 +3,11 @@
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
+using System.Collections.Generic;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using WinRT.Interop;
 
 namespace Studiofy.IDE.Pages.TabViewPages
 {
@@ -13,9 +18,18 @@ namespace Studiofy.IDE.Pages.TabViewPages
             InitializeComponent();
         }
 
+        private List<string> recentFiles = new()
+        {
+            "Welcome",
+            "Hello World.js",
+            "Test File",
+            "Hello There",
+            "Welcome"
+        };
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            ItemNotifier.Visibility = RecentItemList.Items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
         }
 
         private void OpenEditorButton_Click(object sender, RoutedEventArgs e)
@@ -25,12 +39,38 @@ namespace Studiofy.IDE.Pages.TabViewPages
 
         private void NewFileButton_Click(object sender, RoutedEventArgs e)
         {
-
+            MainWindow.m_TabService.Add(new TabViewItem()
+            {
+                Header = "New File",
+                Content = new EditorPage(),
+                IconSource = new SymbolIconSource()
+                {
+                    Symbol = Symbol.Document
+                }
+            });
         }
 
-        private void OpenFileButton_Click(object sender, RoutedEventArgs e)
+        private async void OpenFileButton_Click(object sender, RoutedEventArgs e)
         {
+            FileOpenPicker filePicker = new();
 
+            nint hwnd = WindowNative.GetWindowHandle(MainWindow.m_MainWindow);
+
+            InitializeWithWindow.Initialize(filePicker, hwnd);
+
+            filePicker.FileTypeFilter.Add("*");
+
+            StorageFile storageFile = await filePicker.PickSingleFileAsync();
+
+            if (storageFile != null)
+            {
+                TabViewItem tabItem = await MainWindow.m_FileService.OpenFileAsync(storageFile, new EditorPage());
+
+                if (tabItem != null)
+                {
+                    MainWindow.m_TabService.Add(tabItem);
+                }
+            }
         }
 
         private void OpenFolderButton_Click(object sender, RoutedEventArgs e)

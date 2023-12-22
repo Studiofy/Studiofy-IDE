@@ -3,12 +3,17 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Studiofy.Common.Service;
+using Studiofy.IDE.Dialogs;
 using Studiofy.IDE.Pages.NavigationViewPages;
 using Studiofy.IDE.Pages.TabViewPages;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 using WinRT.Interop;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -21,7 +26,15 @@ namespace Studiofy.IDE
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        private readonly AppWindow m_AppWindow;
+        private AppWindow m_AppWindow { get; set; }
+
+        private UpdateService m_UpdateService { get; set; }
+
+        public static TabService m_TabService = new();
+
+        public static FileService m_FileService;
+
+        public static MainWindow m_MainWindow { get; set; }
 
         #region Window Initialization
 
@@ -29,8 +42,15 @@ namespace Studiofy.IDE
         {
             InitializeComponent();
 
-            SystemBackdrop = new MicaBackdrop();
+            m_MainWindow = this;
+
+            SystemBackdrop = new MicaBackdrop()
+            {
+                Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.Base
+            };
+
             m_AppWindow = GetAppWindowForCurrentView();
+
             m_AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/StudiofyIDECanaryLogo.ico"));
 
             if (AppWindowTitleBar.IsCustomizationSupported() is true)
@@ -53,15 +73,7 @@ namespace Studiofy.IDE
             AppNavigationView.SelectedItem = ExplorerNavMenuItem;
             AppContentFrame.Navigate(typeof(ExplorerNavViewPage));
 
-            EditorTabView.TabItems.Add(new TabViewItem()
-            {
-                Header = "Welcome",
-                Content = new WelcomePage(),
-                IconSource = new SymbolIconSource()
-                {
-                    Symbol = Symbol.Document
-                }
-            });
+            m_TabService.Set(EditorTabView);
         }
 
         internal enum Monitor_DPI_Type : int
@@ -153,6 +165,15 @@ namespace Studiofy.IDE
 
         #endregion
 
+        private List<string> searchableTexts = new()
+        {
+            "New File",
+            "Open Folder",
+            "Open Settings",
+            "Check Updates",
+            "About"
+        };
+
         private void AppNavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (sender.SelectedItem as NavigationViewItem == ExplorerNavMenuItem)
@@ -177,20 +198,19 @@ namespace Studiofy.IDE
                 }
             };
 
-            EditorTabView.TabItems.Add(settingsTab);
-            EditorTabView.SelectedItem = settingsTab;
+            m_TabService.Add(settingsTab);
         }
 
         private void EditorTabView_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
         {
-            sender.TabItems.Remove(args.Item);
+            m_TabService.Remove(args.Item as TabViewItem);
         }
 
         private void ShowWelcomePageMenuItem_Click(object sender, RoutedEventArgs e)
         {
             TabViewItem welcomeTab = new()
             {
-                Header = "Settings",
+                Header = "Welcome",
                 Content = new WelcomePage(),
                 IconSource = new SymbolIconSource()
                 {
@@ -198,13 +218,187 @@ namespace Studiofy.IDE
                 }
             };
 
-            EditorTabView.TabItems.Add(welcomeTab);
-            EditorTabView.SelectedItem = welcomeTab;
+            m_TabService.Add(welcomeTab);
         }
 
         private void EditorTabView_Loaded(object sender, RoutedEventArgs e)
         {
+            m_TabService.Add(new TabViewItem()
+            {
+                Header = "Welcome",
+                Content = new WelcomePage(),
+                IconSource = new SymbolIconSource()
+                {
+                    Symbol = Symbol.Document
+                }
+            });
+
+            m_FileService = new();
+
             AppStatus.Text = "Ready";
+        }
+
+        private void EditorTabView_AddTabButtonClick(TabView sender, object args)
+        {
+            TabViewItem editorTab = new()
+            {
+                Header = "New File",
+                Content = new EditorPage(),
+                IconSource = new SymbolIconSource()
+                {
+                    Symbol = Symbol.Document
+                }
+            };
+
+            m_TabService.Add(editorTab);
+        }
+
+        private void AppSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            AppSuggestBox.Text = args.SelectedItem.ToString();
+            if (AppSuggestBox.Text.Equals(searchableTexts[0]))
+            {
+                TabViewItem editorTab = new()
+                {
+                    Header = "New File",
+                    Content = new EditorPage(),
+                    IconSource = new SymbolIconSource()
+                    {
+                        Symbol = Symbol.Document
+                    }
+                };
+
+                m_TabService.Add(editorTab);
+            }
+        }
+
+        private async void AppSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            if (!string.IsNullOrEmpty(sender.Text))
+            {
+                bool fromSuggestion = sender.Text.Equals(args.ChosenSuggestion);
+                ContentDialog resultDialog = new()
+                {
+                    Title = "Query Submitted!",
+                    Content = $"Query Text: {sender.Text}\nFrom Suggestion: {fromSuggestion}",
+                    CloseButtonText = "Close",
+                    DefaultButton = ContentDialogButton.Close,
+                    XamlRoot = Content.XamlRoot
+                };
+                await resultDialog.ShowAsync();
+                if (sender.Text.Equals(searchableTexts[0]))
+                {
+                    TabViewItem editorTab = new()
+                    {
+                        Header = "New File",
+                        Content = new EditorPage(),
+                        IconSource = new SymbolIconSource()
+                        {
+                            Symbol = Symbol.Document
+                        }
+                    };
+
+                    EditorTabView.TabItems.Add(editorTab);
+                    EditorTabView.SelectedItem = editorTab;
+                }
+                sender.Text = string.Empty;
+            }
+        }
+
+        private void AppSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                List<string> possibleSelections = new();
+                string[] selectionText = sender.Text.ToLower().Split(" ");
+                foreach (string text in searchableTexts)
+                {
+                    bool foundSearchableText = selectionText.All((key) =>
+                    {
+                        return text.ToLower().Contains(key);
+                    });
+                    if (foundSearchableText)
+                    {
+                        possibleSelections.Add(text);
+                    }
+                }
+                if (possibleSelections.Count is 0)
+                {
+                    possibleSelections.Add("No Results Found");
+                }
+                sender.ItemsSource = possibleSelections;
+            }
+        }
+
+        private void Grid_Loaded(object sender, RoutedEventArgs e)
+        {
+            InfoBar alertBar = new()
+            {
+                Title = "Studiofy Confidential",
+                Message = "This version of Studiofy IDE is for internal testing only. Do not distribute the application without the owner's permission.",
+                ActionButton = new HyperlinkButton()
+                {
+                    Content = "Learn More",
+                    NavigateUri = new Uri("https://github.com/Studiofy/Studiofy-IDE?tab=readme-ov-file#permission")
+                },
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                IsOpen = true,
+                IsClosable = false,
+                Severity = InfoBarSeverity.Error
+            };
+
+            InfoBarStackPanel.Children.Add(alertBar);
+        }
+
+        private void CheckUpdatesMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            m_UpdateService = new(Common.Enums.Version.Canary, Content.XamlRoot);
+            m_UpdateService.CheckForUpdates(Windows.ApplicationModel.Package.Current.Id.Version);
+        }
+
+        private void NewFileMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            m_TabService.Add(new TabViewItem()
+            {
+                Header = "New File",
+                Content = new EditorPage(),
+                IconSource = new SymbolIconSource()
+                {
+                    Symbol = Symbol.Document
+                }
+            });
+        }
+
+        private async void AboutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            AboutDialog aboutDialog = new() { XamlRoot = Content.XamlRoot };
+
+            await aboutDialog.ShowAsync();
+        }
+
+        private async void OpenFileMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            FileOpenPicker filePicker = new();
+
+            nint hwnd = WindowNative.GetWindowHandle(m_MainWindow);
+
+            InitializeWithWindow.Initialize(filePicker, hwnd);
+
+            filePicker.FileTypeFilter.Add("*");
+
+            StorageFile storageFile = await filePicker.PickSingleFileAsync();
+
+            if (storageFile != null)
+            {
+                TabViewItem tabItem = await m_FileService.OpenFileAsync(storageFile, new EditorPage());
+
+                if (tabItem != null)
+                {
+                    m_TabService.Add(tabItem);
+
+                    EditorTabView.SelectedItem = tabItem;
+                }
+            }
         }
     }
 }

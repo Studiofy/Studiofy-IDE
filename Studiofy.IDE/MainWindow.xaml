@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid Loaded="Grid_Loaded">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -46,7 +46,7 @@
                 Grid.Column="1"
                 Width="24"
                 Height="24"
-                Margin="12,0,5,0"
+                Margin="12,0,7,0"
                 Source="/Assets/StoreLogo.scale-400.png" />
             <MenuBar x:Name="AppMenuBar"
                      Grid.Column="3"
@@ -54,7 +54,8 @@
                 <MenuBarItem Title="File">
                     <MenuBarItem.Items>
                         <MenuFlyoutItem x:Name="NewFileMenuItem"
-                                        Text="New File">
+                                        Text="New File"
+                                        Click="NewFileMenuItem_Click">
                             <MenuFlyoutItem.Icon>
                                 <FontIcon Glyph="&#xE8A5;"/>
                             </MenuFlyoutItem.Icon>
@@ -64,7 +65,8 @@
                         </MenuFlyoutItem>
                         <MenuFlyoutSubItem Text="Open">
                             <MenuFlyoutItem x:Name="OpenFileMenuItem"
-                                            Text="Open File">
+                                            Text="Open File"
+                                            Click="OpenFileMenuItem_Click">
                                 <MenuFlyoutItem.Icon>
                                     <FontIcon Glyph="&#xE8e5;"/>
                                 </MenuFlyoutItem.Icon>
@@ -197,8 +199,16 @@
                     <MenuFlyoutItem x:Name="WhatsNewMenuItem"
                                     Text="What's New"/>
                     <MenuFlyoutSeparator/>
+                    <MenuFlyoutItem x:Name="CheckUpdatesMenuItem"
+                                    Text="Check for Updates"
+                                    Click="CheckUpdatesMenuItem_Click">
+                        <MenuFlyoutItem.Icon>
+                            <FontIcon Glyph="&#xE895;"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
                     <MenuFlyoutItem x:Name="AboutMenuItem"
-                                    Text="About Studiofy IDE">
+                                    Text="About Studiofy IDE"
+                                    Click="AboutMenuItem_Click">
                         <MenuFlyoutItem.Icon>
                             <FontIcon Glyph="&#xE946;"/>
                         </MenuFlyoutItem.Icon>
@@ -209,15 +219,16 @@
                             Grid.Column="5"
                             Height="32"
                             Width="250"
-                            QueryIcon="Find"
                             Margin="0,0,10,0"
                             VerticalAlignment="Center"
-                            PlaceholderText="Search"
-                            ToolTipService.ToolTip="Press Ctrl+F2 or Click Here to Search">
-                <AutoSuggestBox.KeyboardAccelerators>
-                    <KeyboardAccelerator Modifiers="Control" Key="F2"/>
-                </AutoSuggestBox.KeyboardAccelerators>
-            </AutoSuggestBox>
+                            HorizontalAlignment="Stretch"
+                            PlaceholderText="Search Here"
+                            QueryIcon="Find"
+                            ItemsSource="{x:Bind searchableTexts, Mode=OneWay}"
+                            SuggestionChosen="AppSuggestBox_SuggestionChosen"
+                            TextChanged="AppSuggestBox_TextChanged"
+                            AutoMaximizeSuggestionArea="True"
+                            QuerySubmitted="AppSuggestBox_QuerySubmitted"/>
         </Grid>
         <Grid x:Name="WindowContent"
               Grid.Row="1">
@@ -228,7 +239,37 @@
             </Grid.RowDefinitions>
             <StackPanel x:Name="CommandBarStackPanel"
                         Grid.Row="0"
-                        Orientation="Horizontal"/>
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                <CommandBar x:Name="StandardCommandBar" 
+                            DefaultLabelPosition="Collapsed"
+                            OverflowButtonVisibility="Collapsed"
+                            IsDynamicOverflowEnabled="False"
+                            VerticalAlignment="Center"
+                            IsEnabled="False">
+                    <AppBarToggleButton x:Name="ToggleListPane"
+                                        Width="42"
+                                        Icon="ClosePane"/>
+                    <AppBarButton x:Name="SaveFileButton"
+                                  Icon="Save"
+                                  Width="42"/>
+                    <AppBarButton x:Name="SaveAllButton"
+                                  Width="42">
+                        <AppBarButton.Icon>
+                            <FontIcon Glyph="&#xEA35;"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                    <AppBarSeparator/>
+                    <AppBarButton x:Name="UndoButton"
+                                  Icon="Undo"
+                                  Width="42"/>
+                    <AppBarButton x:Name="RedoButton"
+                                  Icon="Redo"
+                                  Width="42"/>
+                    <AppBarButton Icon="More"
+                                  Width="42"/>
+                </CommandBar>
+            </StackPanel>
             <StackPanel x:Name="InfoBarStackPanel"
                         Grid.Row="1"
                         Orientation="Vertical"/>
@@ -294,12 +335,13 @@
                 <TabView x:Name="EditorTabView"
                          Grid.Column="1"
                          Grid.Row="0"
-                         IsAddTabButtonVisible="False"
                          HorizontalContentAlignment="Stretch"
                          VerticalContentAlignment="Stretch"
                          VerticalAlignment="Stretch"
                          HorizontalAlignment="Stretch"
                          TabCloseRequested="EditorTabView_TabCloseRequested"
+                         AddTabButtonClick="EditorTabView_AddTabButtonClick"
+                         IsAddTabButtonVisible="False"
                          Margin="0,-5,0,0"
                          Loaded="EditorTabView_Loaded"/>
             </Grid>

@@ -9,6 +9,18 @@
     mc:Ignorable="d" MaxWidth="400">
 
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <AutoSuggestBox x:Name="ExtensionSearchBox"
+                        Grid.Row="0"
+                        Margin="5"
+                        CornerRadius="2"
+                        PlaceholderText="Search Extensions"
+                        QueryIcon="Find"/>
+        <ListView x:Name="ExtensionListView"
+                  Grid.Row="1"
+                  Margin="5,0,5,5"/>
     </Grid>
 </Page>

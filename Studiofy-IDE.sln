@@ -5,7 +5,9 @@ VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StudiofyIDE.App", "StudiofyIDE.App\StudiofyIDE.App.csproj", "{68E156F4-67C4-47E1-928A-D4FC85E7BC09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Studiofy.IDE", "Studiofy.IDE\Studiofy.IDE.csproj", "{2C1D3666-31B9-4D84-8E03-B2178AD6874E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Studiofy.IDE", "Studiofy.IDE\Studiofy.IDE.csproj", "{2C1D3666-31B9-4D84-8E03-B2178AD6874E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Studiofy.Common", "Studiofy.Common\Studiofy.Common.csproj", "{6683787E-4BB1-4F06-88F4-BA9FA536140A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,22 @@ Global
 		{2C1D3666-31B9-4D84-8E03-B2178AD6874E}.Release|x86.ActiveCfg = Release|x86
 		{2C1D3666-31B9-4D84-8E03-B2178AD6874E}.Release|x86.Build.0 = Release|x86
 		{2C1D3666-31B9-4D84-8E03-B2178AD6874E}.Release|x86.Deploy.0 = Release|x86
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Debug|x64.Build.0 = Debug|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Debug|x86.Build.0 = Debug|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Release|ARM64.Build.0 = Release|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Release|x64.ActiveCfg = Release|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Release|x64.Build.0 = Release|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Release|x86.ActiveCfg = Release|Any CPU
+		{6683787E-4BB1-4F06-88F4-BA9FA536140A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
