@@ -13,14 +13,5 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <AutoSuggestBox x:Name="FileSearchBox"
-                        Grid.Row="0"
-                        Margin="5"
-                        CornerRadius="2"
-                        PlaceholderText="Search Files"
-                        QueryIcon="Find"/>
-        <TreeView x:Name="FileTreeView"
-                  Grid.Row="1"
-                  Margin="5,0,5,5"/>
     </Grid>
 </Page>

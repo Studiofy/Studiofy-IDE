@@ -75,7 +75,8 @@
                                 </MenuFlyoutItem.KeyboardAccelerators>
                             </MenuFlyoutItem>
                             <MenuFlyoutItem x:Name="OpenFolderMenuItem"
-                                            Text="Open Folder">
+                                            Text="Open Folder"
+                                            Click="OpenFolderMenuItem_Click">
                                 <MenuFlyoutItem.Icon>
                                     <SymbolIcon Symbol="OpenLocal"/>
                                 </MenuFlyoutItem.Icon>
@@ -96,7 +97,8 @@
                                         Icon="Home"/>
                         <MenuFlyoutSeparator/>
                         <MenuFlyoutItem x:Name="CloseWindowMenuItem"
-                                        Text="Exit">
+                                        Text="Exit"
+                                        Click="CloseWindowMenuItem_Click">
                             <MenuFlyoutItem.KeyboardAccelerators>
                                 <KeyboardAccelerator Modifiers="Menu" Key="F4"/>
                             </MenuFlyoutItem.KeyboardAccelerators>
@@ -245,8 +247,7 @@
                             DefaultLabelPosition="Collapsed"
                             OverflowButtonVisibility="Collapsed"
                             IsDynamicOverflowEnabled="False"
-                            VerticalAlignment="Center"
-                            IsEnabled="False">
+                            VerticalAlignment="Center">
                     <AppBarToggleButton x:Name="ToggleListPane"
                                         Width="42"
                                         Icon="ClosePane"/>
@@ -316,23 +317,22 @@
                         </NavigationViewItem>
                     </NavigationView.MenuItems>
                     <NavigationView.Content>
-                        <Frame x:Name="AppContentFrame"/>
+                        <StackPanel Orientation="Vertical">
+                            <AutoSuggestBox x:Name="TreeViewSearchBox"
+                                            Grid.Row="0"
+                                            Margin="5"
+                                            CornerRadius="2"
+                                            QueryIcon="Find"
+                                            TextChanged="TreeViewSearchBox_TextChanged"
+                                            SuggestionChosen="TreeViewSearchBox_SuggestionChosen"/>
+                            <TreeView x:Name="NavTreeView"
+                                      x:FieldModifier="Public"
+                                      Grid.Row="1"/>
+                        </StackPanel>
                     </NavigationView.Content>
-                    <NavigationView.FooterMenuItems>
-                        <NavigationViewItem x:Name="WhatsNewNavMenuItem"
-                            Content="What's New"
-                            ToolTipService.ToolTip="What's New (Windows+Shift+F1)"
-                            ToolTipService.Placement="Right">
-                            <NavigationViewItem.Icon>
-                                <FontIcon Glyph="&#xE789;"/>
-                            </NavigationViewItem.Icon>
-                            <NavigationViewItem.KeyboardAccelerators>
-                                <KeyboardAccelerator Modifiers="Windows,Shift" Key="F1"/>
-                            </NavigationViewItem.KeyboardAccelerators>
-                        </NavigationViewItem>
-                    </NavigationView.FooterMenuItems>
                 </NavigationView>
                 <TabView x:Name="EditorTabView"
+                         x:FieldModifier="Public"
                          Grid.Column="1"
                          Grid.Row="0"
                          HorizontalContentAlignment="Stretch"
@@ -342,6 +342,7 @@
                          TabCloseRequested="EditorTabView_TabCloseRequested"
                          AddTabButtonClick="EditorTabView_AddTabButtonClick"
                          IsAddTabButtonVisible="False"
+                         SelectionChanged="EditorTabView_SelectionChanged"
                          Margin="0,-5,0,0"
                          Loaded="EditorTabView_Loaded"/>
             </Grid>

@@ -5,7 +5,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Studiofy.Common.Service;
 using Studiofy.IDE.Dialogs;
-using Studiofy.IDE.Pages.NavigationViewPages;
 using Studiofy.IDE.Pages.TabViewPages;
 using System;
 using System.Collections.Generic;
@@ -71,7 +70,8 @@ namespace Studiofy.IDE
             Title = Windows.ApplicationModel.Package.Current.DisplayName;
 
             AppNavigationView.SelectedItem = ExplorerNavMenuItem;
-            AppContentFrame.Navigate(typeof(ExplorerNavViewPage));
+
+            TreeViewSearchBox.PlaceholderText = "Search Files";
 
             m_TabService.Set(EditorTabView);
         }
@@ -106,7 +106,7 @@ namespace Studiofy.IDE
         private AppWindow GetAppWindowForCurrentView()
         {
             IntPtr hWnd = WindowNative.GetWindowHandle(this);
-            WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            Microsoft.UI.WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
             return AppWindow.GetFromWindowId(wndId);
         }
 
@@ -148,7 +148,7 @@ namespace Studiofy.IDE
         private double GetScaleAdjustment()
         {
             IntPtr hWnd = WindowNative.GetWindowHandle(this);
-            WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            Microsoft.UI.WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
             DisplayArea displayArea = DisplayArea.GetFromWindowId(wndId, DisplayAreaFallback.Primary);
             IntPtr hMonitor = Win32Interop.GetMonitorFromDisplayId(displayArea.DisplayId);
 
@@ -165,6 +165,10 @@ namespace Studiofy.IDE
 
         #endregion
 
+        private IList<TreeViewNode> fileViewNodes { get; set; }
+
+        private StorageFolder activeFolder { get; set; }
+
         private List<string> searchableTexts = new()
         {
             "New File",
@@ -178,11 +182,13 @@ namespace Studiofy.IDE
         {
             if (sender.SelectedItem as NavigationViewItem == ExplorerNavMenuItem)
             {
-                AppContentFrame.Navigate(typeof(ExplorerNavViewPage));
+                TreeViewSearchBox.PlaceholderText = "Search Files";
+                NavTreeView.ItemsSource = fileViewNodes;
             }
             else if (sender.SelectedItem as NavigationViewItem == ExtensionNavMenuItem)
             {
-                AppContentFrame.Navigate(typeof(ExtensionsNavViewPage));
+                TreeViewSearchBox.PlaceholderText = "Search Extensions";
+                NavTreeView.ItemsSource = null;
             }
         }
 
@@ -218,7 +224,14 @@ namespace Studiofy.IDE
                 }
             };
 
-            m_TabService.Add(welcomeTab);
+            if (EditorTabView.TabItems.Cast<TabViewItem>().Any(tabItem => tabItem.Header.ToString() == welcomeTab.Header.ToString()))
+            {
+                EditorTabView.SelectedItem = EditorTabView.TabItems.Cast<TabViewItem>().FirstOrDefault(tabItem => tabItem.Header.ToString() == welcomeTab.Header.ToString());
+            }
+            else
+            {
+                m_TabService.Add(welcomeTab);
+            }
         }
 
         private void EditorTabView_Loaded(object sender, RoutedEventArgs e)
@@ -358,15 +371,24 @@ namespace Studiofy.IDE
 
         private void NewFileMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            m_TabService.Add(new TabViewItem()
+            EditorPage editorPage = new();
+
+            TabViewItem editorTab = new()
             {
                 Header = "New File",
-                Content = new EditorPage(),
+                Content = editorPage,
                 IconSource = new SymbolIconSource()
                 {
                     Symbol = Symbol.Document
                 }
-            });
+            };
+
+            m_TabService.Add(editorTab);
+
+            if (editorTab.Header != null)
+            {
+                WelcomePage.recentFiles.Add(editorTab.Header);
+            }
         }
 
         private async void AboutMenuItem_Click(object sender, RoutedEventArgs e)
@@ -392,13 +414,113 @@ namespace Studiofy.IDE
             {
                 TabViewItem tabItem = await m_FileService.OpenFileAsync(storageFile, new EditorPage());
 
+                RichEditBox textEditor = (tabItem.Content as EditorPage).TextEditor;
+
+                if (textEditor != null)
+                {
+                    string fileContent = await FileIO.ReadTextAsync(storageFile);
+
+                    if (!string.IsNullOrEmpty(fileContent))
+                    {
+                        textEditor.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, fileContent);
+                    }
+                    else
+                    {
+                        ContentDialog errorDialog = new()
+                        {
+                            Title = "Error",
+                            Content = "Cannot Add File Contents",
+                            CloseButtonText = "OK",
+                            DefaultButton = ContentDialogButton.Close,
+                            XamlRoot = Content.XamlRoot
+                        };
+                        await errorDialog.ShowAsync();
+                    }
+                }
+
                 if (tabItem != null)
                 {
                     m_TabService.Add(tabItem);
 
                     EditorTabView.SelectedItem = tabItem;
+
+                    if (tabItem.Header != null)
+                    {
+                        WelcomePage.recentFiles.Add(tabItem.Header);
+                    }
                 }
             }
+        }
+
+        private void EditorTabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if ((sender as TabView).SelectedItem as TabViewItem != null)
+            {
+                if (((sender as TabView).SelectedItem as TabViewItem).Header.Equals("Welcome"))
+                {
+                    StandardCommandBar.IsEnabled = false;
+                }
+                else
+                {
+                    StandardCommandBar.IsEnabled = true;
+                }
+            }
+        }
+
+        private void CloseWindowMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Exit();
+        }
+
+        private async void OpenFolderMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            FolderPicker folderPicker = new();
+            folderPicker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
+            folderPicker.FileTypeFilter.Add("*");
+
+            nint hwnd = WindowNative.GetWindowHandle(MainWindow.m_MainWindow);
+            InitializeWithWindow.Initialize(folderPicker, hwnd);
+
+            StorageFolder selectedFolder = await folderPicker.PickSingleFolderAsync();
+
+            await m_FileService.PopulateFileView(selectedFolder, NavTreeView.RootNodes, Content.XamlRoot);
+
+            fileViewNodes = NavTreeView.RootNodes;
+
+            activeFolder = selectedFolder;
+
+            TreeViewSearchBox.ItemsSource = fileViewNodes;
+        }
+
+        private void TreeViewSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            //if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            //{
+            //    List<string> possibleSelections = new();
+            //    string[] selectionText = sender.Text.ToLower().Split(" ");
+            //    foreach (string text in TreeViewSearchBox.Items)
+            //    {
+            //        bool foundSearchableText = selectionText.All((key) =>
+            //        {
+            //            return text.ToLower().Contains(key);
+            //        });
+            //        if (foundSearchableText)
+            //        {
+            //            possibleSelections.Add(text);
+            //        }
+            //    }
+            //    if (possibleSelections.Count is 0)
+            //    {
+            //        possibleSelections.Add("No Results Found");
+            //    }
+            //    sender.ItemsSource = possibleSelections;
+            //}
+        }
+
+        private void TreeViewSearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            TreeViewSearchBox.Text = args.SelectedItem.ToString();
+
         }
     }
 }

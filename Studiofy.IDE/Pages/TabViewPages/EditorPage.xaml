@@ -9,6 +9,21 @@
     mc:Ignorable="d">
 
     <Grid>
-
+        <RichEditBox x:Name="TextEditor" 
+                     x:FieldModifier="Public"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     CornerRadius="0">
+            <RichEditBox.Style>
+                <Style TargetType="RichEditBox">
+                    <Setter Property="BorderBrush" Value="Gray"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Padding" Value="10"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="UseSystemFocusVisuals" Value="False"/>
+                    <Setter Property="IsFocusEngagementEnabled" Value="False"/>
+                </Style>
+            </RichEditBox.Style>
+        </RichEditBox>
     </Grid>
 </Page>

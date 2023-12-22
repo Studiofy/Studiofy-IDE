@@ -10,7 +10,7 @@
   <Identity
     Name="Studiofy-IDE-740e40-91bf89-563ace993d44"
     Publisher="CN=Studiofy"
-    Version="1.1.1030.2" />
+    Version="1.1.1030.3" />
 
   <mp:PhoneIdentity PhoneProductId="608ce638-e1fb-4ffa-bbfb-a3ce2a29b184" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -21,8 +21,8 @@
   </Properties>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.22000.0" MaxVersionTested="10.0.22621.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.22000.0" MaxVersionTested="10.0.22621.0" />
   </Dependencies>
 
   <Resources>

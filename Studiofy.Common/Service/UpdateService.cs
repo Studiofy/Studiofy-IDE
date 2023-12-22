@@ -97,7 +97,7 @@ namespace Studiofy.Common.Service
             progressRing.IsActive = true;
             progressRing.IsIndeterminate = true;
 
-            await Task.Delay(5000);
+            await Task.Delay(2500);
 
             if (Releases.Count != 0)
             {
@@ -120,73 +120,89 @@ namespace Studiofy.Common.Service
 
                 if (appVersion != newVersion)
                 {
-                    if (isVersionPreRelease)
+                    if (appVersion.Revision > newVersion.Revision)
                     {
-                        ContentDialog preReleaseWarningDialog = new()
+                        ContentDialog updateDialog = new()
                         {
-                            Title = "Warning",
-                            Content = $"{latestRelease.Name.Replace("-Canary", " for Canary Channel")} is marked as Pre-Release.\nYou can skip this update if you want to use only the beta or official versions.\n\nIf you want to use this Pre-Release update, click Continue.",
-                            PrimaryButtonText = "Continue",
-                            SecondaryButtonText = "Skip",
-                            DefaultButton = ContentDialogButton.Secondary,
-                            XamlRoot = m_XamlRoot
+                            Title = "Build above from beyond",
+                            Content = $"The application's version: {appVersion.Major}.{appVersion.Minor}.{appVersion.Build}.{appVersion.Revision} is not on the official release that is listed for the end-users.\nDo not distribute this application without the owner's permission.",
+                            XamlRoot = m_XamlRoot,
+                            CloseButtonText = "Close",
+                            DefaultButton = ContentDialogButton.Close
                         };
 
-                        ContentDialogResult warningDialogResult = await preReleaseWarningDialog.ShowAsync();
-
-                        if (warningDialogResult == ContentDialogResult.Primary)
-                        {
-                            IReadOnlyList<ReleaseAsset> releaseAssets = latestRelease.Assets;
-                            ReleaseAsset msix_Asset = null;
-
-                            foreach (ReleaseAsset releaseAsset in releaseAssets)
-                            {
-                                if (releaseAsset.Name.EndsWith(".msix"))
-                                {
-                                    msix_Asset = releaseAsset;
-                                    break;
-                                }
-                            }
-
-                            if (msix_Asset != null)
-                            {
-                                using HttpClient httpClient = new();
-                                string url = msix_Asset.BrowserDownloadUrl;
-                                HttpResponseMessage response = httpClient.GetAsync(url).Result;
-                                Stream streamContent = response.Content.ReadAsStreamAsync().Result;
-                                string TempPath = Path.GetTempPath();
-                                string fileName = "SIDECanaryUpdate.msix";
-                                string filePath = Path.Combine(TempPath, fileName);
-
-                                bool IsFileAlreadyAvailable = File.Exists(filePath);
-
-                                if (IsFileAlreadyAvailable)
-                                {
-                                    File.Delete(filePath);
-                                }
-
-                                using (FileStream fileStream = new(filePath, System.IO.FileMode.CreateNew, FileAccess.ReadWrite))
-                                {
-                                    streamContent.CopyTo(fileStream);
-                                }
-
-                                InstallUpdate(filePath, true);
-                            }
-                        }
+                        await updateDialog.ShowAsync();
                     }
                     else
                     {
-                        ContentDialog updateFoundDialog = new()
+                        if (isVersionPreRelease)
                         {
-                            Title = "New Version Available!",
-                            Content = $"{latestRelease.Name.Replace("-Canary", " for Canary Channel")} is Available. Would you like to Update now?\n\nNote: Application will shutdown when installing the update",
-                            PrimaryButtonText = "Yes, Update Now",
-                            SecondaryButtonText = "No, Maybe Later",
-                            DefaultButton = ContentDialogButton.Primary,
-                            XamlRoot = m_XamlRoot
-                        };
+                            ContentDialog preReleaseWarningDialog = new()
+                            {
+                                Title = "Warning",
+                                Content = $"{latestRelease.Name.Replace("-Canary", " for Canary Channel")} is marked as Pre-Release.\nYou can skip this update if you want to use only the beta or official versions.\n\nIf you want to use this Pre-Release update, click Continue.",
+                                PrimaryButtonText = "Continue",
+                                SecondaryButtonText = "Skip",
+                                DefaultButton = ContentDialogButton.Secondary,
+                                XamlRoot = m_XamlRoot
+                            };
 
-                        ContentDialogResult updateFoundDialogResult = await updateFoundDialog.ShowAsync();
+                            ContentDialogResult warningDialogResult = await preReleaseWarningDialog.ShowAsync();
+
+                            if (warningDialogResult == ContentDialogResult.Primary)
+                            {
+                                IReadOnlyList<ReleaseAsset> releaseAssets = latestRelease.Assets;
+                                ReleaseAsset msix_Asset = null;
+
+                                foreach (ReleaseAsset releaseAsset in releaseAssets)
+                                {
+                                    if (releaseAsset.Name.EndsWith(".msix"))
+                                    {
+                                        msix_Asset = releaseAsset;
+                                        break;
+                                    }
+                                }
+
+                                if (msix_Asset != null)
+                                {
+                                    using HttpClient httpClient = new();
+                                    string url = msix_Asset.BrowserDownloadUrl;
+                                    HttpResponseMessage response = httpClient.GetAsync(url).Result;
+                                    Stream streamContent = response.Content.ReadAsStreamAsync().Result;
+                                    string TempPath = Path.GetTempPath();
+                                    string fileName = "SIDECanaryUpdate.msix";
+                                    string filePath = Path.Combine(TempPath, fileName);
+
+                                    bool IsFileAlreadyAvailable = File.Exists(filePath);
+
+                                    if (IsFileAlreadyAvailable)
+                                    {
+                                        File.Delete(filePath);
+                                    }
+
+                                    using (FileStream fileStream = new(filePath, System.IO.FileMode.CreateNew, FileAccess.ReadWrite))
+                                    {
+                                        streamContent.CopyTo(fileStream);
+                                    }
+
+                                    InstallUpdate(filePath, true);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ContentDialog updateFoundDialog = new()
+                            {
+                                Title = "New Version Available!",
+                                Content = $"{latestRelease.Name.Replace("-Canary", " for Canary Channel")} is Available. Would you like to Update now?\n\nNote: Application will shutdown when installing the update",
+                                PrimaryButtonText = "Yes, Update Now",
+                                SecondaryButtonText = "No, Maybe Later",
+                                DefaultButton = ContentDialogButton.Primary,
+                                XamlRoot = m_XamlRoot
+                            };
+
+                            ContentDialogResult updateFoundDialogResult = await updateFoundDialog.ShowAsync();
+                        }
                     }
                 }
                 else
