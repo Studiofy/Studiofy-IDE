@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Studiofy.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,6 @@ namespace Studiofy.Common.Service
 {
     public class FileService
     {
-        private class FileTag
-        {
-            public string FileName { get; set; }
-
-            public string FilePath { get; set; }
-        }
 
         public Task<TabViewItem> OpenFileAsync(StorageFile storageFile, object content)
         {
@@ -41,8 +36,28 @@ namespace Studiofy.Common.Service
             {
                 // Clear existing nodes in the TreeView
                 nodes.Clear();
+
+                List<IStorageItem> items = (await folder.GetItemsAsync()).ToList();
+
+                foreach (IStorageItem item in items)
+                {
+                    TreeViewNode newNode = new() { Content = item.Name };
+
+                    if (item is StorageFolder)
+                    {
+                        newNode.HasUnrealizedChildren = true;
+                    }
+
+                    nodes.Add(newNode);
+
+                    // If the item is a folder, recursively populate its children
+                    if (item is StorageFolder subFolder)
+                    {
+                        await PopulateFileView(subFolder, newNode.Children, root);
+                    }
+                }
             }
-            catch (NullReferenceException ex)
+            catch (Exception ex)
             {
                 ContentDialog errorDialog = new()
                 {
@@ -55,25 +70,46 @@ namespace Studiofy.Common.Service
 
                 await errorDialog.ShowAsync();
             }
+        }
 
-            List<IStorageItem> items = (await folder.GetItemsAsync()).ToList();
+        public async Task<List<string>> PopulateTreeViewSearchBox(StorageFolder folder, XamlRoot root)
+        {
+            List<string> nodeStrings = new();
 
-            foreach (IStorageItem item in items)
+            try
             {
-                TreeViewNode newNode = new() { Content = item.Name };
+                List<IStorageItem> items = (await folder.GetItemsAsync()).ToList();
 
-                if (item is StorageFolder)
+                foreach (IStorageItem item in items)
                 {
-                    newNode.HasUnrealizedChildren = true;
+                    TreeViewNode newNode = new() { Content = item.Name };
+
+                    if (item is StorageFolder subFolder)
+                    {
+                        newNode.HasUnrealizedChildren = true;
+                        // Recursively add items from subfolders
+                        List<string> subFolderItems = await PopulateTreeViewSearchBox(subFolder, root);
+                        nodeStrings.AddRange(subFolderItems);
+                    }
+
+                    nodeStrings.Add(item.Name);
                 }
 
-                nodes.Add(newNode);
-
-                // If the item is a folder, recursively populate its children
-                if (item is StorageFolder subFolder)
+                return nodeStrings;
+            }
+            catch (Exception ex)
+            {
+                ContentDialog errorDialog = new()
                 {
-                    await PopulateFileView(subFolder, newNode.Children, root);
-                }
+                    Title = $"{ex.Source} throws an Exception",
+                    Content = ex.Message,
+                    DefaultButton = ContentDialogButton.Close,
+                    CloseButtonText = "Close",
+                    XamlRoot = root
+                };
+
+                await errorDialog.ShowAsync();
+                return null;
             }
         }
     }

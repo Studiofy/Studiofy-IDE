@@ -165,8 +165,6 @@ namespace Studiofy.IDE
 
         #endregion
 
-        private IList<TreeViewNode> fileViewNodes { get; set; }
-
         private StorageFolder activeFolder { get; set; }
 
         private List<string> searchableTexts = new()
@@ -178,12 +176,13 @@ namespace Studiofy.IDE
             "About"
         };
 
+        private List<string> searchableFiles = new();
+
         private void AppNavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (sender.SelectedItem as NavigationViewItem == ExplorerNavMenuItem)
             {
                 TreeViewSearchBox.PlaceholderText = "Search Files";
-                NavTreeView.ItemsSource = fileViewNodes;
             }
             else if (sender.SelectedItem as NavigationViewItem == ExtensionNavMenuItem)
             {
@@ -483,43 +482,147 @@ namespace Studiofy.IDE
 
             StorageFolder selectedFolder = await folderPicker.PickSingleFolderAsync();
 
-            await m_FileService.PopulateFileView(selectedFolder, NavTreeView.RootNodes, Content.XamlRoot);
+            if (selectedFolder != null)
+            {
+                activeFolder = selectedFolder;
 
-            fileViewNodes = NavTreeView.RootNodes;
+                await m_FileService.PopulateFileView(selectedFolder, NavTreeView.RootNodes, Content.XamlRoot);
 
-            activeFolder = selectedFolder;
+                try
+                {
+                    for (int i = 0; i < FileMenu.Items.Count; i++)
+                    {
+                        if (i == 3)
+                        {
+                            FileMenu.Items.Add(new MenuFlyoutSeparator());
+                        }
+                        else if (i == 4)
+                        {
+                            FileMenu.Items.Add(new MenuFlyoutItem()
+                            {
+                                Text = $"Close {activeFolder.DisplayName} Folder",
+                                Icon = new FontIcon()
+                                {
+                                    Glyph = "&#xE8BB;"
+                                }
+                            });
+                        }
+                    }
 
-            TreeViewSearchBox.ItemsSource = fileViewNodes;
+                    searchableFiles = await m_FileService.PopulateTreeViewSearchBox(selectedFolder, Content.XamlRoot);
+
+                    TreeViewSearchBox.ItemsSource = searchableFiles;
+                }
+                catch (Exception ex)
+                {
+                    InfoBar exceptionBar = new()
+                    {
+                        Title = $"Exception thrown: {ex.Source}",
+                        Message = ex.Message,
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        IsOpen = true,
+                        IsClosable = true,
+                        Severity = InfoBarSeverity.Error
+                    };
+
+                    InfoBarStackPanel.Children.Add(exceptionBar);
+                }
+
+            }
         }
 
         private void TreeViewSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            //if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
-            //{
-            //    List<string> possibleSelections = new();
-            //    string[] selectionText = sender.Text.ToLower().Split(" ");
-            //    foreach (string text in TreeViewSearchBox.Items)
-            //    {
-            //        bool foundSearchableText = selectionText.All((key) =>
-            //        {
-            //            return text.ToLower().Contains(key);
-            //        });
-            //        if (foundSearchableText)
-            //        {
-            //            possibleSelections.Add(text);
-            //        }
-            //    }
-            //    if (possibleSelections.Count is 0)
-            //    {
-            //        possibleSelections.Add("No Results Found");
-            //    }
-            //    sender.ItemsSource = possibleSelections;
-            //}
+            try
+            {
+                if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+                {
+                    List<string> possibleSelections = new();
+                    string[] selectionText = sender.Text.ToLower().Split(" ");
+                    foreach (string file in searchableFiles)
+                    {
+                        string nodeName = file;
+
+                        bool foundSearchableText = selectionText.All((key) =>
+                        {
+                            return nodeName.Contains(key, StringComparison.CurrentCultureIgnoreCase);
+                        });
+
+                        if (foundSearchableText)
+                        {
+                            possibleSelections.Add(nodeName);
+                            NavTreeView.RootNodes.FirstOrDefault(node => node.Content.ToString().Equals(nodeName));
+                        }
+                    }
+                    if (possibleSelections.Count is 0)
+                    {
+                        possibleSelections.Add("No Results Found");
+                    }
+                    sender.ItemsSource = possibleSelections;
+                }
+            }
+            catch (Exception ex)
+            {
+                InfoBar exceptionBar = new()
+                {
+                    Title = $"Exception thrown: {ex.Source}",
+                    Message = ex.Message,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    IsOpen = true,
+                    IsClosable = true,
+                    Severity = InfoBarSeverity.Error
+                };
+
+                InfoBarStackPanel.Children.Add(exceptionBar);
+            }
         }
 
-        private void TreeViewSearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        private async void TreeViewSearchBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
-            TreeViewSearchBox.Text = args.SelectedItem.ToString();
+            try
+            {
+                StorageFile chosenFile = await activeFolder.GetFileAsync(args.SelectedItem.ToString());
+
+                if (chosenFile != null)
+                {
+                    InfoBarStackPanel.Children.Add(new InfoBar()
+                    {
+                        Title = "File Found",
+                        Message = chosenFile.Path,
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        IsOpen = true,
+                        IsClosable = true,
+                        Severity = InfoBarSeverity.Success
+                    });
+                }
+                else
+                {
+                    InfoBarStackPanel.Children.Add(new InfoBar()
+                    {
+                        Title = "File Not Found",
+                        Message = chosenFile.Path,
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        IsOpen = true,
+                        IsClosable = true,
+                        Severity = InfoBarSeverity.Error
+                    });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                InfoBar exceptionBar = new()
+                {
+                    Title = $"Exception thrown: {ex.Source}",
+                    Message = ex.Message,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    IsOpen = true,
+                    IsClosable = true,
+                    Severity = InfoBarSeverity.Error
+                };
+
+                InfoBarStackPanel.Children.Add(exceptionBar);
+            }
 
         }
     }
