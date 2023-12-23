@@ -16,7 +16,7 @@
     <PackageCertificateKeyFile>Studiofy.IDE_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-    <AppxPackageSigningTimestampServerUrl>http://sha256timestamp.ws.symantec.com/sha256/timestamp</AppxPackageSigningTimestampServerUrl>
+    <AppxPackageSigningTimestampServerUrl>http://rfc3161timestamp.globalsign.com/advanced</AppxPackageSigningTimestampServerUrl>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
@@ -35,6 +35,10 @@
     <None Remove="Pages\MainPage.xaml" />
     <None Remove="Pages\NavigationViewPages\ExplorerNavViewPage.xaml" />
     <None Remove="Pages\NavigationViewPages\ExtensionsNavViewPage.xaml" />
+    <None Remove="Pages\SettingsPages\CommandBarSettingsPage.xaml" />
+    <None Remove="Pages\SettingsPages\EditorSettingsPage.xaml" />
+    <None Remove="Pages\SettingsPages\GeneralSettingsPage.xaml" />
+    <None Remove="Pages\SettingsPages\TerminalSettingsPage.xaml" />
     <None Remove="Pages\TabViewPages\EditorPage.xaml" />
     <None Remove="Pages\TabViewPages\SettingsPage.xaml" />
     <None Remove="Pages\TabViewPages\WelcomePage.xaml" />
@@ -80,6 +84,21 @@
     <ProjectReference Include="..\Studiofy.Common\Studiofy.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Pages\SettingsPages\CommandBarSettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\SettingsPages\TerminalSettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\SettingsPages\EditorSettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Dialogs\AboutDialog.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
@@ -122,6 +141,11 @@
     </Page>
     <Page Update="Pages\TabViewPages\WelcomePage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\SettingsPages\GeneralSettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
 

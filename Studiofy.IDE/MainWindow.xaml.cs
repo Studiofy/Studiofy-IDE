@@ -69,7 +69,7 @@ namespace Studiofy.IDE
 
             Title = Windows.ApplicationModel.Package.Current.DisplayName;
 
-            AppNavigationView.SelectedItem = ExplorerNavMenuItem;
+            //AppNavigationView.SelectedItem = ExplorerNavMenuItem;
 
             TreeViewSearchBox.PlaceholderText = "Search Files";
 
@@ -180,15 +180,15 @@ namespace Studiofy.IDE
 
         private void AppNavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-            if (sender.SelectedItem as NavigationViewItem == ExplorerNavMenuItem)
-            {
-                TreeViewSearchBox.PlaceholderText = "Search Files";
-            }
-            else if (sender.SelectedItem as NavigationViewItem == ExtensionNavMenuItem)
-            {
-                TreeViewSearchBox.PlaceholderText = "Search Extensions";
-                NavTreeView.ItemsSource = null;
-            }
+            //if (sender.SelectedItem as NavigationViewItem == ExplorerNavMenuItem)
+            //{
+            //    TreeViewSearchBox.PlaceholderText = "Search Files";
+            //}
+            //else if (sender.SelectedItem as NavigationViewItem == ExtensionNavMenuItem)
+            //{
+            //    TreeViewSearchBox.PlaceholderText = "Search Extensions";
+            //    NavTreeView.ItemsSource = null;
+            //}
         }
 
         private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
@@ -457,11 +457,19 @@ namespace Studiofy.IDE
             {
                 if (((sender as TabView).SelectedItem as TabViewItem).Header.Equals("Welcome"))
                 {
-                    StandardCommandBar.IsEnabled = false;
+                    SaveFileButton.IsEnabled = false;
+                    SaveAllButton.IsEnabled = false;
+                    UndoButton.IsEnabled = false;
+                    RedoButton.IsEnabled = false;
+                    MoreButton.IsEnabled = false;
                 }
                 else
                 {
-                    StandardCommandBar.IsEnabled = true;
+                    SaveFileButton.IsEnabled = false;
+                    SaveAllButton.IsEnabled = false;
+                    UndoButton.IsEnabled = false;
+                    RedoButton.IsEnabled = false;
+                    MoreButton.IsEnabled = false;
                 }
             }
         }
@@ -477,7 +485,7 @@ namespace Studiofy.IDE
             folderPicker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
             folderPicker.FileTypeFilter.Add("*");
 
-            nint hwnd = WindowNative.GetWindowHandle(MainWindow.m_MainWindow);
+            nint hwnd = WindowNative.GetWindowHandle(m_MainWindow);
             InitializeWithWindow.Initialize(folderPicker, hwnd);
 
             StorageFolder selectedFolder = await folderPicker.PickSingleFolderAsync();
@@ -517,8 +525,7 @@ namespace Studiofy.IDE
                 {
                     InfoBar exceptionBar = new()
                     {
-                        Title = $"Exception thrown: {ex.Source}",
-                        Message = ex.Message,
+                        Message = ex.Message.Replace("\r\n", " "),
                         HorizontalAlignment = HorizontalAlignment.Stretch,
                         IsOpen = true,
                         IsClosable = true,
@@ -565,8 +572,7 @@ namespace Studiofy.IDE
             {
                 InfoBar exceptionBar = new()
                 {
-                    Title = $"Exception thrown: {ex.Source}",
-                    Message = ex.Message,
+                    Message = ex.Message.Replace("\r\n", " "),
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     IsOpen = true,
                     IsClosable = true,
@@ -613,8 +619,7 @@ namespace Studiofy.IDE
             {
                 InfoBar exceptionBar = new()
                 {
-                    Title = $"Exception thrown: {ex.Source}",
-                    Message = ex.Message,
+                    Message = ex.Message.Replace("\r\n", " "),
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     IsOpen = true,
                     IsClosable = true,
@@ -624,6 +629,50 @@ namespace Studiofy.IDE
                 InfoBarStackPanel.Children.Add(exceptionBar);
             }
 
+        }
+
+        private void ToggleListPane_Checked(object sender, RoutedEventArgs e)
+        {
+            if (ToggleListPane.IsChecked == true)
+            {
+                MainSplitView.IsPaneOpen = true;
+                ToggleListPane.Icon = new SymbolIcon()
+                {
+                    Symbol = Symbol.ClosePane
+                };
+            }
+        }
+
+        private void ToggleListPane_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (ToggleListPane.IsChecked == false)
+            {
+                MainSplitView.IsPaneOpen = false;
+                ToggleListPane.Icon = new SymbolIcon()
+                {
+                    Symbol = Symbol.OpenPane
+                };
+            }
+        }
+
+        private void ToggleListPane_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (ToggleListPane.IsChecked == true)
+            {
+                MainSplitView.IsPaneOpen = true;
+                ToggleListPane.Icon = new SymbolIcon()
+                {
+                    Symbol = Symbol.ClosePane
+                };
+            }
+            else if (ToggleListPane.IsChecked == false)
+            {
+                MainSplitView.IsPaneOpen = false;
+                ToggleListPane.Icon = new SymbolIcon()
+                {
+                    Symbol = Symbol.OpenPane
+                };
+            }
         }
     }
 }

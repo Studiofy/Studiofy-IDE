@@ -120,20 +120,11 @@ namespace Studiofy.Common.Service
 
                 if (appVersion != newVersion)
                 {
-                    if (appVersion.Revision > newVersion.Revision)
-                    {
-                        ContentDialog updateDialog = new()
-                        {
-                            Title = "Build above from beyond",
-                            Content = $"The application's version: {appVersion.Major}.{appVersion.Minor}.{appVersion.Build}.{appVersion.Revision} is not on the official release that is listed for the end-users.\nDo not distribute this application without the owner's permission.",
-                            XamlRoot = m_XamlRoot,
-                            CloseButtonText = "Close",
-                            DefaultButton = ContentDialogButton.Close
-                        };
-
-                        await updateDialog.ShowAsync();
-                    }
-                    else
+                    if (appVersion.Major < newVersion.Major &&
+                        appVersion.Minor < newVersion.Minor &&
+                        appVersion.Build < newVersion.Build &&
+                        appVersion.Revision < newVersion.Revision ||
+                        appVersion.Revision > newVersion.Revision)
                     {
                         if (isVersionPreRelease)
                         {
@@ -202,7 +193,72 @@ namespace Studiofy.Common.Service
                             };
 
                             ContentDialogResult updateFoundDialogResult = await updateFoundDialog.ShowAsync();
+
+                            if (updateFoundDialogResult == ContentDialogResult.Primary)
+                            {
+                                ContentDialog downloadStatusDialog = new()
+                                {
+                                    Title = "Update Status",
+                                    Content = "Downloading update...",
+                                    CloseButtonText = "Cancel",
+                                    XamlRoot = m_XamlRoot
+                                };
+
+                                await downloadStatusDialog.ShowAsync();
+
+                                IReadOnlyList<ReleaseAsset> releaseAssets = latestRelease.Assets;
+                                ReleaseAsset msix_Asset = null;
+
+                                foreach (ReleaseAsset releaseAsset in releaseAssets)
+                                {
+                                    if (releaseAsset.Name.EndsWith(".msix"))
+                                    {
+                                        msix_Asset = releaseAsset;
+                                        break;
+                                    }
+                                }
+
+                                if (msix_Asset != null)
+                                {
+                                    using HttpClient httpClient = new();
+                                    string url = msix_Asset.BrowserDownloadUrl;
+                                    HttpResponseMessage response = httpClient.GetAsync(url).Result;
+                                    Stream streamContent = response.Content.ReadAsStreamAsync().Result;
+                                    string TempPath = Path.GetTempPath();
+                                    string fileName = "SIDECanaryUpdate.msix";
+                                    string filePath = Path.Combine(TempPath, fileName);
+
+                                    bool IsFileAlreadyAvailable = File.Exists(filePath);
+
+                                    if (IsFileAlreadyAvailable)
+                                    {
+                                        File.Delete(filePath);
+                                    }
+
+                                    using (FileStream fileStream = new(filePath, System.IO.FileMode.CreateNew, FileAccess.ReadWrite))
+                                    {
+                                        streamContent.CopyTo(fileStream);
+                                    }
+
+                                    downloadStatusDialog.Content = "Update Downloaded";
+
+                                    InstallUpdate(filePath, true);
+                                }
+                            }
                         }
+                    }
+                    else
+                    {
+                        ContentDialog updateDialog = new()
+                        {
+                            Title = "Build above from beyond",
+                            Content = $"The application's version: {appVersion.Major}.{appVersion.Minor}.{appVersion.Build}.{appVersion.Revision} is not on the official release that is listed for the end-users.\nDo not distribute this application without the owner's permission.",
+                            XamlRoot = m_XamlRoot,
+                            CloseButtonText = "Close",
+                            DefaultButton = ContentDialogButton.Close
+                        };
+
+                        await updateDialog.ShowAsync();
                     }
                 }
                 else
@@ -210,7 +266,7 @@ namespace Studiofy.Common.Service
                     ContentDialog updateNotFoundDialog = new()
                     {
                         Title = "Studiofy IDE (Canary) is Up-to-Date",
-                        Content = $"{latestRelease.Name.Replace("v", "version ").Replace("-Canary", " for Canary Channel")} is the Latest Version",
+                        Content = $"version {appVersion.Major}.{appVersion.Minor}.{appVersion.Build}.{appVersion.Revision} is the Latest Version",
                         CloseButtonText = "OK",
                         DefaultButton = ContentDialogButton.Close,
                         XamlRoot = m_XamlRoot

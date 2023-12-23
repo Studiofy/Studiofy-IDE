@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Studiofy.IDE.Pages.SettingsPages.GeneralSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Studiofy.IDE.Pages.SettingsPages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:winui="using:CommunityToolkit.WinUI.Controls"
+    mc:Ignorable="d" Background="Transparent">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <TextBlock Text="General"
+                       VerticalAlignment="Center"
+                       Padding="25,0"
+                       FontSize="24"
+                       FontWeight="SemiBold"/>
+        </Grid>
+        <StackPanel Grid.Row="1"
+                    Padding="25,0"
+                    Margin="0,10,0,0"
+                    Orientation="Vertical">
+            <StackPanel Orientation="Vertical"
+                        Spacing="5">
+                <winui:SettingsCard Header="Theme">
+                    <winui:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE790;"/>
+                    </winui:SettingsCard.HeaderIcon>
+                    <ComboBox x:Name="AppearanceComboBox"
+                              SelectionChanged="AppearanceComboBox_SelectionChanged">
+                        <ComboBoxItem Content="Use System Theme"/>
+                        <ComboBoxItem Content="Light"/>
+                        <ComboBoxItem Content="Dark"/>
+                    </ComboBox>
+                </winui:SettingsCard>
+                <winui:SettingsExpander Header="UI Settings"
+                                        HeaderIcon="Setting">
+                    <winui:SettingsExpander.Items>
+                        <winui:SettingsCard>
+                            <winui:SettingsCard.Header>
+                                <CheckBox x:Name="ConfidentialMessageCheckbox"
+                                          Content="Show Confidential Message"
+                                          Checked="ConfidentialMessageCheckbox_Checked"/>
+                            </winui:SettingsCard.Header>
+                        </winui:SettingsCard>
+                        <winui:SettingsCard>
+                            <winui:SettingsCard.Header>
+                                <CheckBox x:Name="ShowWelcomePageCheckbox" 
+                                          Content="Show Welcome Page on Startup"
+                                          Checked="ShowWelcomePageCheckbox_Checked"/>
+                            </winui:SettingsCard.Header>
+                        </winui:SettingsCard>
+                    </winui:SettingsExpander.Items>
+                </winui:SettingsExpander>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

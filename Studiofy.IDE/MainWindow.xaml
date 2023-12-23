@@ -251,7 +251,9 @@
                             VerticalAlignment="Center">
                     <AppBarToggleButton x:Name="ToggleListPane"
                                         Width="42"
-                                        Icon="ClosePane"/>
+                                        Checked="ToggleListPane_Checked"
+                                        Unchecked="ToggleListPane_Unchecked"
+                                        Loaded="ToggleListPane_Loaded"/>
                     <AppBarButton x:Name="SaveFileButton"
                                   Icon="Save"
                                   Width="42"/>
@@ -268,13 +270,17 @@
                     <AppBarButton x:Name="RedoButton"
                                   Icon="Redo"
                                   Width="42"/>
-                    <AppBarButton Icon="More"
+                    <AppBarButton x:Name="MoreButton"
+                                  Icon="More"
                                   Width="42"/>
                 </CommandBar>
             </StackPanel>
             <StackPanel x:Name="InfoBarStackPanel"
                         Grid.Row="1"
-                        Orientation="Vertical"/>
+                        Orientation="Vertical"
+                        MaxHeight="100"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        ScrollViewer.VerticalScrollMode="Enabled"/>
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -284,7 +290,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <NavigationView x:Name="AppNavigationView"
+                <!--<NavigationView x:Name="AppNavigationView"
                                 IsBackButtonVisible="Collapsed"
                                 IsSettingsVisible="False"
                                 PaneDisplayMode="LeftCompact"
@@ -328,11 +334,45 @@
                                             SuggestionChosen="TreeViewSearchBox_SuggestionChosen"/>
                             <TreeView x:Name="NavTreeView"
                                       x:FieldModifier="Public"
-                                      Grid.Row="1"/>
+                                      Grid.Row="1"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                      ScrollViewer.HorizontalScrollMode="Enabled"/>
                         </StackPanel>
                     </NavigationView.Content>
-                </NavigationView>
-                <TabView x:Name="EditorTabView"
+                </NavigationView>-->
+                <SplitView x:Name="MainSplitView"
+                           Grid.Row="0"
+                           Grid.Column="0"
+                           Grid.ColumnSpan="2"
+                           CompactPaneLength="50"
+                           OpenPaneLength="300"
+                           DisplayMode="Inline"
+                           PaneBackground="{ThemeResource LayerOnAccentAcrylicFillColorDefaultBrush}">
+                    <SplitView.Pane>
+                        <StackPanel Orientation="Horizontal">
+                            <ListView x:Name="SidebarPane"
+                                      Width="50"
+                                      BorderBrush="Gray"
+                                      BorderThickness="0,0,1,0">
+                                
+                            </ListView>
+                            <StackPanel Orientation="Vertical"
+                                        Width="250">
+                                <AutoSuggestBox x:Name="TreeViewSearchBox"
+                                            Margin="5"
+                                            CornerRadius="2"
+                                            QueryIcon="Find"
+                                            TextChanged="TreeViewSearchBox_TextChanged"
+                                            SuggestionChosen="TreeViewSearchBox_SuggestionChosen"/>
+                                <TreeView x:Name="NavTreeView"
+                                      x:FieldModifier="Public"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                      ScrollViewer.HorizontalScrollMode="Enabled"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </SplitView.Pane>
+                    <SplitView.Content>
+                        <TabView x:Name="EditorTabView"
                          x:FieldModifier="Public"
                          Grid.Column="1"
                          Grid.Row="0"
@@ -346,6 +386,8 @@
                          SelectionChanged="EditorTabView_SelectionChanged"
                          Margin="0,-5,0,0"
                          Loaded="EditorTabView_Loaded"/>
+                    </SplitView.Content>
+                </SplitView>
             </Grid>
         </Grid>
         <StackPanel x:Name="StatusBarStackPanel"

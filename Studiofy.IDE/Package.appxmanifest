@@ -10,7 +10,7 @@
   <Identity
     Name="Studiofy-IDE-740e40-91bf89-563ace993d44"
     Publisher="CN=Studiofy"
-    Version="1.1.1030.3" />
+    Version="1.1.1031.0" />
 
   <mp:PhoneIdentity PhoneProductId="608ce638-e1fb-4ffa-bbfb-a3ce2a29b184" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
